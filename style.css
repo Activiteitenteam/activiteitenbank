@@ -7,11 +7,38 @@
   --geel:       rgb(245, 190, 65);
   --oranje:     rgb(237, 118, 68);
   --donkergroen:rgb(42, 98, 31);
-  --gebroken-wit:rgb(244, 243, 234);
-  --tekst:      #2b2b2b;
+
+  /* Oppervlakken en tekst; deze wisselen mee met de nachtmodus */
+  --gebroken-wit: rgb(244, 243, 234);  /* achtergrond van de pagina */
+  --oppervlak:    #fff;                /* kaarten, header, formuliervelden */
+  --tekst:        #2b2b2b;
+  --zacht:        #555;
+  --zachter:      #888;
+  --rand:         #ddd;
+}
+
+/* ── Nachtmodus: alleen de oppervlakken draaien om, de huisstijlkleuren
+   blijven staan zodat de secties herkenbaar blijven ── */
+:root[data-thema="donker"] {
+  --gebroken-wit: #15161a;
+  --oppervlak:    #22242c;
+  --tekst:        #ecebe5;
+  --zacht:        #b3b2ab;
+  --zachter:      #90908a;
+  --rand:         #3c3e48;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
+
+/* De html-achtergrond moet meekleuren: tijdens een paginawissel is body
+   even doorzichtig, en zonder dit zie je het witte browservenster erdoorheen.
+   Dat was de "flits" tussen twee pagina's. */
+html {
+  background: var(--gebroken-wit);
+  color-scheme: light;
+}
+html[data-thema="donker"] { color-scheme: dark; }
 
 body {
   /* Filson Pro / Campton zijn de huisstijlfonts; Arial is de vastgelegde fallback */
@@ -19,22 +46,34 @@ body {
   background: var(--gebroken-wit);
   color: var(--tekst);
   line-height: 1.6;
-  animation: pagina-in .25s ease;
+  animation: pagina-in .34s cubic-bezier(.22, .61, .36, 1);
 }
 
-/* ── Fade bij paginawissel ── */
+/* ── Paginawissel: uitgaand zakt de pagina iets weg, inkomend komt hij
+   van onderen op. Beide met een zachte curve in plaats van een harde fade. ── */
 @keyframes pagina-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
 }
 body.pagina-uit {
   opacity: 0;
-  transition: opacity .15s ease;
+  transform: translateY(-6px);
+  transition: opacity .2s ease-in, transform .2s ease-in;
+}
+
+/* Wie bewegende interfaces vervelend vindt, krijgt alleen een korte fade */
+@media (prefers-reduced-motion: reduce) {
+  body { animation-duration: .12s; }
+  @keyframes pagina-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  body.pagina-uit { transform: none; transition: opacity .1s linear; }
 }
 
 /* ── Header & navigatie ── */
 header {
-  background: #fff;
+  background: var(--oppervlak);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -103,15 +142,25 @@ nav a.nav-prikbord:hover, nav a.nav-prikbord.actief { background: var(--oranje);
   background-size: cover;
   background-position: center;
   opacity: 0;
-  transition: opacity 1.5s ease-in-out;
 }
-.hero-slide.actief { opacity: 1; }
+/* De inkomende foto fadet met een animatie over de vorige heen, die
+   ondoorzichtig blijft liggen tot de nieuwe volledig dekt. Met een
+   transition lukt dit niet: die start niet betrouwbaar als de vorige
+   staat van het element in dezelfde stap verandert. */
+.hero-slide.actief  { opacity: 1; z-index: 2; }
+.hero-slide.vorig   { opacity: 1; z-index: 1; }
+.hero-slide.komt-op { animation: slide-op 1.5s ease-in-out both; }
+@keyframes slide-op {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 113, 185, .72);
+  background: var(--hero-tint, rgba(0, 113, 185, .72));
+  z-index: 3;
 }
-.hero-inhoud { position: relative; }
+.hero-inhoud { position: relative; z-index: 4; }
 .hero h1 {
   font-size: clamp(2rem, 5vw, 3.2rem);
   font-weight: 800;
@@ -125,15 +174,19 @@ nav a.nav-prikbord:hover, nav a.nav-prikbord.actief { background: var(--oranje);
 }
 
 /* Kleinere hero voor subpagina's, in de sectiekleur */
-.hero-sub { padding: 1.5rem 1.5rem 1.75rem; }
+.hero-sub { padding: 2.75rem 1.5rem 3rem; }
 .hero-sub h1 {
   font-size: clamp(1.5rem, 3vw, 2rem);
   margin-bottom: .25rem;
 }
 .hero-sub p { font-size: 1.05rem; }
-.hero-sub.hero-losse    { background: var(--groen); }
-.hero-sub.hero-thema    { background: var(--paars); }
-.hero-sub.hero-prikbord { background: var(--oranje); }
+/* Elke sectie houdt zijn eigen kleur, nu als transparante laag over de
+   bannerfoto's heen. De egale achtergrond blijft eronder staan als de
+   foto's nog laden. */
+.hero-sub.hero-losse    { background: var(--groen);  --hero-tint: rgba(109, 176, 119, .78); }
+.hero-sub.hero-thema    { background: var(--paars);  --hero-tint: rgba(160,  53, 139, .78); }
+.hero-sub.hero-prikbord { background: var(--oranje); --hero-tint: rgba(237, 118,  68, .78); }
+.hero-sub.hero-admin    { background: var(--blauw);  --hero-tint: rgba(  0, 113, 185, .78); }
 
 /* ── Drie ingangen (de menu's) ── */
 .kaarten {
@@ -191,7 +244,7 @@ section.blok > p { max-width: 640px; margin-bottom: 1.75rem; }
 }
 .item {
   display: block;
-  background: #fff;
+  background: var(--oppervlak);
   border-radius: 14px;
   padding: 1.4rem;
   box-shadow: 0 3px 10px rgba(0,0,0,.07);
@@ -220,11 +273,11 @@ a.item:hover {
   color: var(--blauw);
 }
 .item h3 { font-size: 1.05rem; margin-bottom: .3rem; }
-.item p  { font-size: .92rem; color: #555; }
+.item p  { font-size: .92rem; color: var(--zacht); }
 .item .door {
   font-size: .8rem;
   font-style: italic;
-  color: #888;
+  color: var(--zachter);
   margin-top: .35rem;
 }
 .item .label {
@@ -254,7 +307,7 @@ a.item:hover {
 .terug-link:hover { text-decoration: underline; }
 
 .detail-kaart {
-  background: #fff;
+  background: var(--oppervlak);
   border-radius: 18px;
   padding: 2rem 2.25rem;
   box-shadow: 0 3px 10px rgba(0,0,0,.07);
@@ -270,7 +323,7 @@ a.item:hover {
 .detail-kaart .door {
   font-size: .85rem;
   font-style: italic;
-  color: #888;
+  color: var(--zachter);
 }
 .detail-kaart .label {
   display: inline-block;
@@ -331,14 +384,14 @@ footer .admin-link:hover { opacity: 1; }
 .login-kaart {
   max-width: 420px;
   margin: 0 auto;
-  background: #fff;
+  background: var(--oppervlak);
   border-radius: 18px;
   padding: 2rem 1.75rem;
   box-shadow: 0 6px 18px rgba(0,0,0,.12);
   border-top: 6px solid var(--blauw);
 }
 .login-kaart h2 { margin-bottom: .35rem; }
-.login-kaart p  { font-size: .95rem; color: #555; margin-bottom: 1.25rem; }
+.login-kaart p  { font-size: .95rem; color: var(--zacht); margin-bottom: 1.25rem; }
 
 .formulier {
   display: flex;
@@ -349,9 +402,9 @@ footer .admin-link:hover { opacity: 1; }
 .formulier textarea {
   font: inherit;
   padding: .65rem .9rem;
-  border: 2px solid #ddd;
+  border: 2px solid var(--rand);
   border-radius: 10px;
-  background: #fff;
+  background: var(--oppervlak);
   width: 100%;
 }
 .formulier input:focus,
@@ -369,7 +422,7 @@ footer .admin-link:hover { opacity: 1; }
 .veld-groep > label {
   font-weight: 700;
   font-size: .85rem;
-  color: #555;
+  color: var(--zacht);
 }
 
 /* Info-icoontje met tooltip */
@@ -522,7 +575,7 @@ footer .admin-link:hover { opacity: 1; }
 }
 
 .beheer-paneel {
-  background: #fff;
+  background: var(--oppervlak);
   border-radius: 18px;
   padding: 1.75rem;
   box-shadow: 0 3px 10px rgba(0,0,0,.07);
@@ -539,7 +592,7 @@ footer .admin-link:hover { opacity: 1; }
 }
 
 .beheer-rij {
-  background: #fff;
+  background: var(--oppervlak);
   border-radius: 14px;
   padding: 1rem 1.4rem;
   box-shadow: 0 3px 10px rgba(0,0,0,.07);
@@ -552,11 +605,11 @@ footer .admin-link:hover { opacity: 1; }
   margin-bottom: .9rem;
 }
 .beheer-rij .info h4 { font-size: 1.05rem; }
-.beheer-rij .info p  { font-size: .9rem; color: #555; }
+.beheer-rij .info p  { font-size: .9rem; color: var(--zacht); }
 .beheer-rij .info .door {
   font-size: .8rem;
   font-style: italic;
-  color: #888;
+  color: var(--zachter);
 }
 .beheer-rij .info .label {
   display: inline-block;
@@ -570,3 +623,65 @@ footer .admin-link:hover { opacity: 1; }
   color: var(--blauw);
 }
 .beheer-rij .acties { display: flex; gap: .5rem; }
+
+/* ── Nachtmodus-schakelaar (onderaan, in de footer) ── */
+.thema-schakelaar {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  background: none;
+  border: 0;
+  padding: .4rem;
+  margin: 0;
+  font: inherit;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 999px;
+}
+.thema-schakelaar:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, .7);
+  outline-offset: 2px;
+}
+.thema-spoor {
+  position: relative;
+  width: 46px;
+  height: 26px;
+  flex: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .28);
+  border: 2px solid rgba(255, 255, 255, .55);
+  transition: background .25s ease;
+}
+.thema-knop {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform .28s cubic-bezier(.34, 1.4, .64, 1);
+}
+.thema-schakelaar[aria-pressed="true"] .thema-spoor { background: rgba(0, 0, 0, .45); }
+.thema-schakelaar[aria-pressed="true"] .thema-knop  { transform: translateX(20px); }
+.thema-label {
+  font-size: .85rem;
+  opacity: .85;
+  white-space: nowrap;
+}
+.thema-schakelaar:hover .thema-label { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .thema-knop, .thema-spoor { transition: none; }
+}
+
+/* In de nachtmodus zijn de slagschaduwen van kaarten onzichtbaar; een
+   subtiele rand houdt ze van de achtergrond gescheiden. */
+:root[data-thema="donker"] .item,
+:root[data-thema="donker"] .kaart,
+:root[data-thema="donker"] .detail-kaart,
+:root[data-thema="donker"] .login-kaart,
+:root[data-thema="donker"] .beheer-paneel,
+:root[data-thema="donker"] .beheer-rij {
+  box-shadow: 0 0 0 1px var(--rand), 0 3px 10px rgba(0, 0, 0, .35);
+}

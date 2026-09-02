@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Activiteitenbank.nl</title>
 <link rel="stylesheet" href="style.css">
+<script>
+  // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
+  // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
+  try {
+    var bewaardThema = localStorage.getItem('activiteitenbank-thema');
+    if (bewaardThema === 'donker') document.documentElement.dataset.thema = 'donker';
+  } catch (e) {}
+</script>
 </head>
 <body>
 
@@ -62,19 +70,15 @@
       </span>
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl &middot; <a class="admin-link" href="admin.html">Admin login</a></p>
+    <button type="button" class="thema-schakelaar" id="thema-schakelaar" aria-pressed="false">
+      <span class="thema-spoor" aria-hidden="true"><span class="thema-knop"></span></span>
+      <span class="thema-label">Nachtmodus</span>
+    </button>
   </div>
 </footer>
 
-<script>
-  const slides = document.querySelectorAll('.hero-slide');
-  let huidige = 0;
-  setInterval(() => {
-    slides[huidige].classList.remove('actief');
-    huidige = (huidige + 1) % slides.length;
-    slides[huidige].classList.add('actief');
-  }, 5000);
-</script>
+<script src="hero.js"></script>
 <script src="fade.js"></script>
-
+<script src="thema.js"></script>
 </body>
 </html>
