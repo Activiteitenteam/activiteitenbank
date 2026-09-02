@@ -54,33 +54,36 @@
 <script src="data.js"></script>
 <script>
   const nr = Number(new URLSearchParams(location.search).get('nr'));
-  const activiteit = laadActiviteiten()[nr];
 
-  if (!activiteit) {
-    document.getElementById('act-titel').textContent = 'Activiteit niet gevonden';
-    document.getElementById('detail-kaart').innerHTML =
-      '<p>Deze activiteit bestaat niet (meer). Ga terug naar het overzicht.</p>';
-  } else {
-    document.title = activiteit.titel + ' - Activiteitenbank.nl';
-    document.getElementById('act-titel').textContent =
-      (activiteit.emoji ? activiteit.emoji + ' ' : '') + activiteit.titel;
-    document.getElementById('act-beschrijving').innerHTML =
-      formatteerBeschrijving(activiteit.beschrijving);
+  laadActiviteiten().then(alleActiviteiten => {
+    const activiteit = alleActiviteiten[nr];
 
-    if (activiteit.aangeleverdDoor) {
-      const door = document.getElementById('act-door');
-      door.textContent = 'Aangeleverd door ' + activiteit.aangeleverdDoor;
-      door.hidden = false;
+    if (!activiteit) {
+      document.getElementById('act-titel').textContent = 'Activiteit niet gevonden';
+      document.getElementById('detail-kaart').innerHTML =
+        '<p>Deze activiteit bestaat niet (meer). Ga terug naar het overzicht.</p>';
+    } else {
+      document.title = activiteit.titel + ' - Activiteitenbank.nl';
+      document.getElementById('act-titel').textContent =
+        (activiteit.emoji ? activiteit.emoji + ' ' : '') + activiteit.titel;
+      document.getElementById('act-beschrijving').innerHTML =
+        formatteerBeschrijving(activiteit.beschrijving);
+
+      if (activiteit.aangeleverdDoor) {
+        const door = document.getElementById('act-door');
+        door.textContent = 'Aangeleverd door ' + activiteit.aangeleverdDoor;
+        door.hidden = false;
+      }
+
+      const labelsVak = document.getElementById('act-labels');
+      labelsVan(activiteit).forEach(naam => {
+        const label = document.createElement('span');
+        label.className = 'label';
+        label.textContent = naam;
+        labelsVak.append(label);
+      });
     }
-
-    const labelsVak = document.getElementById('act-labels');
-    labelsVan(activiteit).forEach(naam => {
-      const label = document.createElement('span');
-      label.className = 'label';
-      label.textContent = naam;
-      labelsVak.append(label);
-    });
-  }
+  });
 </script>
 <script src="fade.js"></script>
 

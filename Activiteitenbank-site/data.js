@@ -1,6 +1,7 @@
-// Gedeelde data-laag: activiteiten worden bewaard in localStorage,
-// zodat wijzigingen uit het admin-dashboard direct op de site zichtbaar zijn.
-const AB_OPSLAG_SLEUTEL = 'ab-activiteiten';
+// Gedeelde data-laag: activiteiten worden opgehaald bij en opgeslagen via
+// de backend op Render, die op zijn beurt de activiteiten.json in GitHub
+// bijwerkt. Zo ziet iedere bezoeker dezelfde, actuele lijst.
+const AB_BACKEND_URL = 'https://activiteitenbank-backend.onrender.com';
 
 // Vaste labels waaruit in het admin-dashboard gekozen wordt
 const AB_PRESET_LABELS = [
@@ -20,6 +21,8 @@ const AB_EMOJIS = [
   '🔬', '✂️', '🧩', '🏃', '🌈', '🐌', '📚', '🎉'
 ];
 
+// Wordt alleen gebruikt als de backend even niet bereikbaar is
+// (bijvoorbeeld tijdens het opstarten na een periode van inactiviteit).
 const STANDAARD_ACTIVITEITEN = [
   {
     emoji: '🐌',
@@ -66,16 +69,36 @@ function labelsVan(activiteit) {
   return [];
 }
 
-function laadActiviteiten() {
+// Haalt de actuele activiteiten op bij de backend. Let op: dit is nu een
+// async functie (geeft een Promise terug), dus gebruik 'await laadActiviteiten()'.
+async function laadActiviteiten() {
   try {
-    const opgeslagen = localStorage.getItem(AB_OPSLAG_SLEUTEL);
-    if (opgeslagen) return JSON.parse(opgeslagen);
-  } catch (e) { /* corrupte data -> val terug op standaard */ }
-  return STANDAARD_ACTIVITEITEN.map(a => ({ ...a }));
+    const respons = await fetch(AB_BACKEND_URL + '/api/activiteiten');
+    if (!respons.ok) throw new Error('Backend gaf een foutstatus terug');
+    return await respons.json();
+  } catch (e) {
+    console.warn('Kon activiteiten niet ophalen bij de backend, val terug op standaardlijst.', e);
+    return STANDAARD_ACTIVITEITEN.map(a => ({ ...a }));
+  }
 }
 
-function bewaarActiviteiten(lijst) {
-  localStorage.setItem(AB_OPSLAG_SLEUTEL, JSON.stringify(lijst));
+// Slaat de volledige lijst op via de backend. Vereist een geldig Supabase
+// sessie-token (token) van een ingelogde admin. Geeft true/false terug.
+async function bewaarActiviteiten(lijst, token) {
+  try {
+    const respons = await fetch(AB_BACKEND_URL + '/api/activiteiten', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ activiteiten: lijst })
+    });
+    return respons.ok;
+  } catch (e) {
+    console.error('Opslaan naar de backend is mislukt.', e);
+    return false;
+  }
 }
 
 // Korte samenvatting voor op de thumbnails: alineakopjes (*Kopje*) worden

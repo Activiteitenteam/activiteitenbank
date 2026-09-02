@@ -97,7 +97,7 @@
 
   <div id="beheer-lijst"></div>
 
-  <button type="button" class="knop knop-secundair knop-klein" id="herstel-knop">Herstel voorbeelddata</button>
+  <button type="button" class="knop knop-secundair knop-klein" id="herstel-knop">Vernieuwen</button>
 </section>
 
 <footer>
@@ -137,8 +137,14 @@
   const opslaanKnop = document.getElementById('opslaan-knop');
   const annuleerKnop = document.getElementById('annuleer-knop');
 
-  let activiteiten = laadActiviteiten();
+  let activiteiten = [];
   let bewerkIndex = null; // null = nieuwe toevoegen, anders index die bewerkt wordt
+
+  // Haalt het huidige Supabase sessie-token op, nodig bij elke opslag-actie.
+  async function huidigToken() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    return session ? session.access_token : null;
+  }
 
   // ── Labelkeuze opbouwen uit de presets ──
   AB_PRESET_LABELS.forEach(naam => {
@@ -204,6 +210,7 @@
     } else {
       loginFout.hidden = true;
       toonDashboard(true);
+      activiteiten = await laadActiviteiten();
       tekenLijst();
     }
   });
@@ -249,12 +256,19 @@
       const verwijder = document.createElement('button');
       verwijder.className = 'knop knop-gevaar knop-klein';
       verwijder.textContent = 'Verwijderen';
-      verwijder.addEventListener('click', () => {
+      verwijder.addEventListener('click', async () => {
         if (confirm(`"${a.titel}" verwijderen?`)) {
-          activiteiten.splice(i, 1);
-          bewaarActiviteiten(activiteiten);
-          stopBewerken();
-          tekenLijst();
+          const kopie = activiteiten.slice();
+          kopie.splice(i, 1);
+          const token = await huidigToken();
+          const gelukt = token && await bewaarActiviteiten(kopie, token);
+          if (gelukt) {
+            activiteiten = kopie;
+            stopBewerken();
+            tekenLijst();
+          } else {
+            alert('Verwijderen is niet gelukt. Probeer het opnieuw of log opnieuw in.');
+          }
         }
       });
       acties.append(bewerk, verwijder);
@@ -305,7 +319,7 @@
 
   annuleerKnop.addEventListener('click', stopBewerken);
 
-  document.getElementById('activiteit-form').addEventListener('submit', (e) => {
+  document.getElementById('activiteit-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const activiteit = {
       emoji: gekozenEmoji(),
@@ -315,24 +329,30 @@
       labels: gekozenLabels()
     };
     if (!activiteit.titel) return;
+    const kopie = activiteiten.slice();
     if (bewerkIndex === null) {
-      activiteiten.push(activiteit);
+      kopie.push(activiteit);
     } else {
-      activiteiten[bewerkIndex] = activiteit;
+      kopie[bewerkIndex] = activiteit;
     }
-    bewaarActiviteiten(activiteiten);
-    stopBewerken();
-    tekenLijst();
-  });
-
-  // ── Herstel voorbeelddata ──
-  document.getElementById('herstel-knop').addEventListener('click', () => {
-    if (confirm('Alle wijzigingen wissen en de voorbeeldactiviteiten terugzetten?')) {
-      localStorage.removeItem(AB_OPSLAG_SLEUTEL);
-      activiteiten = laadActiviteiten();
+    opslaanKnop.disabled = true;
+    const token = await huidigToken();
+    const gelukt = token && await bewaarActiviteiten(kopie, token);
+    opslaanKnop.disabled = false;
+    if (gelukt) {
+      activiteiten = kopie;
       stopBewerken();
       tekenLijst();
+    } else {
+      alert('Opslaan is niet gelukt. Probeer het opnieuw of log opnieuw in.');
     }
+  });
+
+  // ── Vernieuwen (haalt de actuele lijst opnieuw op bij de backend) ──
+  document.getElementById('herstel-knop').addEventListener('click', async () => {
+    activiteiten = await laadActiviteiten();
+    stopBewerken();
+    tekenLijst();
   });
 
   // Al ingelogd? Supabase bewaart de sessie zelf, check die bij het laden.
@@ -340,6 +360,7 @@
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (session) {
       toonDashboard(true);
+      activiteiten = await laadActiviteiten();
       tekenLijst();
     }
   })();

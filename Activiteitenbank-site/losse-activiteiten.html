@@ -37,7 +37,9 @@
 <script src="data.js"></script>
 <script>
   const lijst = document.getElementById('activiteiten-lijst');
-  laadActiviteiten().forEach((a, i) => lijst.append(maakActiviteitKaart(a, i)));
+  laadActiviteiten().then(activiteiten => {
+    activiteiten.forEach((a, i) => lijst.append(maakActiviteitKaart(a, i)));
+  });
 </script>
 
 <footer>
