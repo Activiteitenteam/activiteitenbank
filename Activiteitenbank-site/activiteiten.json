@@ -1,5 +1,20 @@
 [
   {
+    "_instelling": "themas",
+    "items": [
+      {
+        "titel": "De natuur in",
+        "samenvatting": "Avontuurlijke buitenactiviteiten rond bos en tuin.",
+        "aantal": 9
+      },
+      {
+        "titel": "Kunst & kleur",
+        "samenvatting": "Schilderen, bouwen en ontwerpen als echte kunstenaars.",
+        "aantal": 10
+      }
+    ]
+  },
+  {
     "emoji": "🐌",
     "titel": "Slakken zoeken in de tuin",
     "beschrijving": "Natuuractiviteit voor buiten, met zoekkaart.",
