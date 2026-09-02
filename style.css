@@ -41,6 +41,10 @@
 html {
   background: var(--gebroken-wit);
   color-scheme: light;
+  /* Houd altijd ruimte vrij voor de scrollbalk. Zonder dit verspringt de
+     hele pagina 7 pixels opzij zodra je van een pagina die past naar een
+     pagina gaat die scrollt. Browsers die dit niet kennen negeren het. */
+  scrollbar-gutter: stable;
 }
 html[data-thema="donker"] { color-scheme: dark; }
 
