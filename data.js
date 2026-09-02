@@ -3,6 +3,11 @@
 // bijwerkt. Zo ziet iedere bezoeker dezelfde, actuele lijst.
 const AB_BACKEND_URL = 'https://activiteitenbank-backend.onrender.com';
 
+// Waar de activiteiten staan. De backend commit elke adminwijziging naar dit
+// pad, dus de commitgeschiedenis ervan is meteen het logboek van wijzigingen.
+const AB_REPO = 'Activiteitenteam/activiteitenbank';
+const AB_ACTIVITEITEN_PAD = 'Activiteitenbank-site/activiteiten.json';
+
 // Vaste labels waaruit in het admin-dashboard gekozen wordt
 const AB_PRESET_LABELS = [
   'Creatief',

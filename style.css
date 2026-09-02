@@ -1141,3 +1141,55 @@ footer .admin-link:hover { opacity: 1; }
   border-left: 4px solid var(--groen);
   color: var(--tekst);
 }
+
+/* ── Sectie Overig in het adminscherm ── */
+.overig {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rand);
+}
+.overig-kop {
+  font-size: 1.05rem;
+  color: var(--zacht);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  margin-bottom: 1rem;
+}
+.logboek-paneel { border-left-color: var(--blauw); }
+
+.logboek {
+  background: var(--oppervlak);
+  border-radius: 14px;
+  padding: .5rem 1.4rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .07);
+  margin-bottom: 1.5rem;
+}
+:root[data-thema="donker"] .logboek {
+  box-shadow: 0 0 0 1px var(--rand), 0 3px 10px rgba(0, 0, 0, .35);
+}
+.logboek-melding {
+  color: var(--zacht);
+  font-size: .9rem;
+  padding: .9rem 0;
+}
+.logboek-lijst {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.logboek-lijst li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: .7rem 0;
+  border-bottom: 1px solid var(--rand);
+}
+.logboek-lijst li:last-child { border-bottom: 0; }
+.logboek-wat { font-size: .92rem; }
+.logboek-wanneer {
+  font-size: .82rem;
+  color: var(--zachter);
+  white-space: nowrap;
+}

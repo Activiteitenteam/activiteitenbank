@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -67,15 +67,6 @@
       <button type="button" class="knop knop-secundair knop-klein" id="herstel-knop">Vernieuwen</button>
       <button type="button" class="knop knop-secundair knop-klein" id="uitloggen">Uitloggen</button>
     </div>
-  </div>
-
-  <div class="onderhoud-paneel" id="onderhoud-paneel">
-    <div>
-      <h3>Onderhoudsmodus</h3>
-      <p id="onderhoud-status">Bezoekers zien de gewone site.</p>
-      <p class="onderhoud-uitleg" id="onderhoud-uitleg"></p>
-    </div>
-    <button type="button" class="knop knop-secundair knop-klein" id="onderhoud-knop">Aanzetten</button>
   </div>
 
   <div class="werkblad-kolommen">
@@ -154,6 +145,31 @@
       </p>
     </div>
   </div>
+
+  <section class="overig" aria-labelledby="overig-kop">
+    <h3 class="overig-kop" id="overig-kop">Overig</h3>
+
+    <div class="onderhoud-paneel" id="onderhoud-paneel">
+      <div>
+        <h3>Onderhoudsmodus</h3>
+        <p id="onderhoud-status">Bezoekers zien de gewone site.</p>
+        <p class="onderhoud-uitleg" id="onderhoud-uitleg"></p>
+      </div>
+      <button type="button" class="knop knop-secundair knop-klein" id="onderhoud-knop">Aanzetten</button>
+    </div>
+
+    <div class="onderhoud-paneel logboek-paneel">
+      <div>
+        <h3>Logboek</h3>
+        <p>Wie heeft wanneer iets aan de activiteiten gewijzigd.</p>
+        <p class="onderhoud-uitleg">Komt uit de wijzigingsgeschiedenis van de repository; elke opslagactie vanuit dit scherm staat erin.</p>
+      </div>
+      <button type="button" class="knop knop-secundair knop-klein" id="logboek-knop"
+              aria-expanded="false" aria-controls="logboek">Bekijken</button>
+    </div>
+
+    <div class="logboek" id="logboek" hidden></div>
+  </section>
 </section>
 
 <footer>
@@ -174,8 +190,8 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="data.js?v=4"></script>
-<script src="activiteit-format.js?v=4"></script>
+<script src="data.js?v=5"></script>
+<script src="activiteit-format.js?v=5"></script>
 <script>
   // ── Supabase login ──
   // De publishable key hieronder is bewust openbaar: die hoort in browsercode.
@@ -532,6 +548,80 @@
     plakTekst.focus();
   });
 
+  // ── Logboek: de commitgeschiedenis van activiteiten.json ──
+  // De backend commit elke opslagactie met het e-mailadres van de admin erin,
+  // dus die geschiedenis is het logboek. Openbare repo, dus geen sleutel nodig.
+  const logboek = document.getElementById('logboek');
+  const logboekKnop = document.getElementById('logboek-knop');
+  let logboekGeladen = false;
+
+  function toonLogboekMelding(tekst) {
+    logboek.innerHTML = '';
+    const p = document.createElement('p');
+    p.className = 'logboek-melding';
+    p.textContent = tekst;
+    logboek.append(p);
+  }
+
+  function schrijfDatum(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
+      + ' om ' + d.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  async function laadLogboek() {
+    toonLogboekMelding('Bezig met ophalen…');
+    try {
+      const url = 'https://api.github.com/repos/' + AB_REPO + '/commits'
+        + '?path=' + encodeURIComponent(AB_ACTIVITEITEN_PAD) + '&per_page=25';
+      const respons = await fetch(url);
+      if (!respons.ok) throw new Error('GitHub gaf status ' + respons.status);
+
+      const commits = await respons.json();
+      if (!Array.isArray(commits) || commits.length === 0) {
+        toonLogboekMelding('Nog geen wijzigingen gevonden.');
+        return;
+      }
+
+      logboek.innerHTML = '';
+      const lijst = document.createElement('ol');
+      lijst.className = 'logboek-lijst';
+
+      commits.forEach(c => {
+        const bericht = (c.commit && c.commit.message || '').split('\n')[0];
+        // "Activiteiten bijgewerkt door naam@..." -> alleen de naam eruit
+        const wie = (bericht.match(/door\s+(.+)$/) || [])[1];
+
+        const li = document.createElement('li');
+        const wanneer = document.createElement('span');
+        wanneer.className = 'logboek-wanneer';
+        wanneer.textContent = schrijfDatum(c.commit.author.date);
+
+        const wat = document.createElement('span');
+        wat.className = 'logboek-wat';
+        wat.textContent = wie ? 'Activiteiten bijgewerkt door ' + wie : bericht;
+
+        li.append(wat, wanneer);
+        lijst.append(li);
+      });
+
+      logboek.append(lijst);
+      logboekGeladen = true;
+    } catch (e) {
+      console.error('Logboek ophalen mislukt.', e);
+      toonLogboekMelding('Het logboek kon niet worden opgehaald. '
+        + 'Probeer het later opnieuw; GitHub staat een beperkt aantal opvragingen per uur toe.');
+    }
+  }
+
+  logboekKnop.addEventListener('click', async () => {
+    const openen = logboek.hidden;
+    logboek.hidden = !openen;
+    logboekKnop.setAttribute('aria-expanded', String(openen));
+    logboekKnop.textContent = openen ? 'Verbergen' : 'Bekijken';
+    if (openen && !logboekGeladen) await laadLogboek();
+  });
+
   // ── Onderhoudsmodus ──
   const onderhoudPaneel = document.getElementById('onderhoud-paneel');
   const onderhoudStatus = document.getElementById('onderhoud-status');
@@ -582,7 +672,7 @@
     }
   })();
 </script>
-<script src="hero.js?v=4"></script>
-<script src="thema.js?v=4"></script>
+<script src="hero.js?v=5"></script>
+<script src="thema.js?v=5"></script>
 </body>
 </html>
