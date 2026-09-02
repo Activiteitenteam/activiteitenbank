@@ -1,7 +1,13 @@
 [
   {
     "_instelling": "themas",
-    "items": []
+    "items": [
+      {
+        "titel": "Kunst",
+        "samenvatting": "Voorbeeld",
+        "aantal": 5
+      }
+    ]
   },
   {
     "emoji": "🐌",
