@@ -685,3 +685,43 @@ footer .admin-link:hover { opacity: 1; }
 :root[data-thema="donker"] .beheer-rij {
   box-shadow: 0 0 0 1px var(--rand), 0 3px 10px rgba(0, 0, 0, .35);
 }
+
+/* ── Onderhoudspagina ── */
+/* De pagina vult altijd het hele scherm: het middenblok rekt mee, zodat
+   de footer onderaan blijft plakken in plaats van halverwege te zweven. */
+.onderhoud-pagina {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.onderhoud-pagina footer { margin-top: 0; }
+.onderhoud {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem 4.5rem;
+}
+.onderhoud-inhoud { max-width: 620px; }
+.onderhoud-emoji {
+  display: block;
+  font-size: clamp(3rem, 9vw, 4.5rem);
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+.onderhoud-inhoud h1 { margin-bottom: .6rem; }
+.onderhoud-inhoud p { font-size: 1.15rem; }
+.onderhoud-iconen {
+  font-size: 1.4rem;
+  letter-spacing: .3em;
+  margin: 1.5rem 0 2rem;
+  opacity: .9;
+}
+/* Op de gekleurde hero valt een blauwe knop weg; deze draait de kleuren om. */
+.knop-licht {
+  display: inline-block;
+  text-decoration: none;
+  background: var(--oppervlak);
+  color: var(--blauw);
+}
+:root[data-thema="donker"] .knop-licht { color: var(--tekst); }
