@@ -110,8 +110,18 @@ nav a.nav-prikbord:hover, nav a.nav-prikbord.actief { background: var(--oranje);
   background: var(--blauw);
   color: #fff;
   text-align: center;
-  padding: 4.5rem 1.5rem 5rem;
+  /* Padding lager dan de min-height, zodat die laatste overal bepalend is;
+     anders wordt de homepage door zijn langere tekst toch weer iets hoger. */
+  padding: 3.5rem 1.5rem 4rem;
+  /* Vaste hoogte met de tekst in het midden. Zonder dit bepaalt de
+     hoeveelheid tekst de hoogte, en verspringt de banner bij elke
+     paginawissel: 307 px op de homepage tegen 174 op een detailpagina. */
+  min-height: 19rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+.hero-inhoud { width: 100%; }
 .hero-slide {
   position: absolute;
   inset: 0;
@@ -149,7 +159,16 @@ nav a.nav-prikbord:hover, nav a.nav-prikbord.actief { background: var(--oranje);
   opacity: .95;
 }
 
-/* Kleinere hero voor subpagina's, in de sectiekleur */
+@media (max-width: 700px) {
+  /* Ook hier moet de min-height bepalend zijn, dus de padding eronder
+     blijven: op mobiel valt de langere homepagetekst over meer regels. */
+  .hero {
+    min-height: 20rem;
+    padding: 2.5rem 1.25rem;
+  }
+}
+
+/* Subpagina's houden kleinere koppen; de hoogte komt van de min-height */
 .hero-sub { padding: 2.75rem 1.5rem 3rem; }
 .hero-sub h1 {
   font-size: clamp(1.5rem, 3vw, 2rem);
