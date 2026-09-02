@@ -12,7 +12,27 @@
   const geenGevond = document.getElementById('geen-resultaat');
   if (!lijst) return;
 
+  // Lege kaartjes in de vorm van de echte, zolang de backend nog antwoordt.
+  // Dat kan even duren: de server op Render valt bij weinig verkeer in slaap
+  // en heeft dan tijd nodig om op te starten.
+  function toonSkelet(aantal) {
+    lijst.setAttribute('aria-busy', 'true');
+    for (let i = 0; i < aantal; i++) {
+      const kaart = document.createElement('div');
+      kaart.className = 'skelet';
+      kaart.setAttribute('aria-hidden', 'true');
+      kaart.innerHTML =
+        '<span class="skelet-regel skelet-titel"></span>' +
+        '<span class="skelet-regel"></span>' +
+        '<span class="skelet-regel kort"></span>' +
+        '<span class="skelet-labels"><span></span><span></span></span>';
+      lijst.append(kaart);
+    }
+  }
+
+  toonSkelet(3);
   const activiteiten = await laadActiviteiten();
+  lijst.innerHTML = '';
 
   // Het volgnummer van de activiteit in de volledige lijst moet bewaard
   // blijven: de detailpagina wordt aangeroepen als activiteit.html?nr=...
@@ -38,6 +58,7 @@
 
   function tekenLijst(items) {
     lijst.innerHTML = '';
+    lijst.removeAttribute('aria-busy');
     items.forEach(i => lijst.append(maakActiviteitKaart(i.activiteit, i.nr)));
   }
 
