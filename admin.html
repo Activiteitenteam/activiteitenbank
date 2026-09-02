@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=7">
-<link rel="icon" href="Assets/favicon.svg?v=7" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=7" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=7">
+<link rel="stylesheet" href="style.css?v=8">
+<link rel="icon" href="Assets/favicon.svg?v=8" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=8" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=8">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -88,6 +88,10 @@
   <section class="overig" aria-labelledby="overig-kop">
     <h3 class="overig-kop" id="overig-kop">Overig</h3>
 
+    <h4 class="logboek-kop">Logboek</h4>
+    <p class="logboek-uitleg">Wie heeft wanneer iets gewijzigd. Komt uit de wijzigingsgeschiedenis van de repository.</p>
+    <div class="logboek" id="logboek"></div>
+
     <div class="onderhoud-paneel" id="onderhoud-paneel">
       <div>
         <h3>Onderhoudsmodus</h3>
@@ -96,10 +100,6 @@
       </div>
       <button type="button" class="knop knop-secundair knop-klein" id="onderhoud-knop">Aanzetten</button>
     </div>
-
-    <h4 class="logboek-kop">Logboek</h4>
-    <p class="logboek-uitleg">Wie heeft wanneer iets gewijzigd. Komt uit de wijzigingsgeschiedenis van de repository.</p>
-    <div class="logboek" id="logboek"></div>
   </section>
 </section>
 
@@ -121,8 +121,8 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="admin-auth.js?v=7"></script>
-<script src="data.js?v=7"></script>
+<script src="admin-auth.js?v=8"></script>
+<script src="data.js?v=8"></script>
 <script>
   const heroBlok   = document.getElementById('hero-blok');
   const loginBlok  = document.getElementById('login-blok');
@@ -268,7 +268,7 @@
     if (await isIngelogd()) await start();
   })();
 </script>
-<script src="hero.js?v=7"></script>
-<script src="thema.js?v=7"></script>
+<script src="hero.js?v=8"></script>
+<script src="thema.js?v=8"></script>
 </body>
 </html>
