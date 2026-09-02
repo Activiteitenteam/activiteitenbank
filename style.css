@@ -688,15 +688,10 @@ footer .admin-link:hover { opacity: 1; }
 }
 .onderhoud-inhoud h1 { margin-bottom: .6rem; }
 .onderhoud-inhoud p { font-size: 1.15rem; }
-.onderhoud-iconen {
-  font-size: 1.4rem;
-  letter-spacing: .3em;
-  margin: 1.5rem 0 2rem;
-  opacity: .9;
-}
 /* Op de gekleurde hero valt een blauwe knop weg; deze draait de kleuren om. */
 .knop-licht {
   display: inline-block;
+  margin-top: 1.75rem;
   text-decoration: none;
   background: var(--oppervlak);
   color: var(--blauw);
@@ -919,3 +914,9 @@ footer .admin-link:hover { opacity: 1; }
 .komt-nog p { color: var(--zacht); max-width: 52ch; margin: 0 auto .6rem; }
 .komt-nog-tip { font-size: .92rem; }
 .komt-nog-tip a { color: var(--blauw); }
+.onderhoud-uitleg {
+  font-size: .82rem;
+  color: var(--zachter);
+  margin-top: .35rem;
+  max-width: 52ch;
+}

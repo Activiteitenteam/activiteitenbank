@@ -64,6 +64,7 @@
     <div>
       <h3>Onderhoudsmodus</h3>
       <p id="onderhoud-status">Bezoekers zien de gewone site.</p>
+      <p class="onderhoud-uitleg" id="onderhoud-uitleg"></p>
     </div>
     <button type="button" class="knop knop-secundair knop-klein" id="onderhoud-knop">Aanzetten</button>
   </div>
@@ -381,6 +382,7 @@
   const onderhoudPaneel = document.getElementById('onderhoud-paneel');
   const onderhoudStatus = document.getElementById('onderhoud-status');
   const onderhoudKnop   = document.getElementById('onderhoud-knop');
+  const onderhoudUitleg = document.getElementById('onderhoud-uitleg');
 
   function werkOnderhoudBij() {
     const aan = onderhoudAan();
@@ -388,19 +390,33 @@
     onderhoudStatus.textContent = aan
       ? 'Bezoekers worden doorgestuurd naar de onderhoudspagina. Jij kunt hier gewoon doorwerken.'
       : 'Bezoekers zien de gewone site.';
+    onderhoudUitleg.textContent = 'Het duurt ongeveer een minuut voor een wijziging bij '
+      + 'bezoekers doorkomt: GitHub Pages moet de site eerst opnieuw publiceren. '
+      + 'Nog een keer klikken helpt niet, en zet hem juist weer terug.';
     onderhoudKnop.textContent = aan ? 'Uitzetten' : 'Aanzetten';
   }
 
   onderhoudKnop.addEventListener('click', async () => {
     const aan = !onderhoudAan();
     onderhoudKnop.disabled = true;
-    const token = await huidigToken();
-    const gelukt = token && await zetOnderhoud(aan, activiteiten, token);
-    onderhoudKnop.disabled = false;
+    onderhoudKnop.textContent = 'Bezig…';
+
+    let gelukt = false;
+    try {
+      const token = await huidigToken();
+      gelukt = Boolean(token) && await zetOnderhoud(aan, activiteiten, token);
+    } catch (e) {
+      console.error('Onderhoudsmodus omzetten is mislukt.', e);
+    } finally {
+      // In finally, anders blijft de knop na een uitzondering voorgoed
+      // uitgeschakeld en lijkt het scherm vastgelopen.
+      onderhoudKnop.disabled = false;
+      werkOnderhoudBij();
+    }
+
     if (!gelukt) {
       alert('De onderhoudsmodus kon niet worden opgeslagen. Probeer het opnieuw of log opnieuw in.');
     }
-    werkOnderhoudBij();
   });
 
   // Al ingelogd? Supabase bewaart de sessie zelf, check die bij het laden.

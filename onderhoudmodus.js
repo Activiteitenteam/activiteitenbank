@@ -10,8 +10,16 @@
 (async () => {
   const VLAG_BESTAND = 'Activiteitenbank-site/activiteiten.json';
 
+  // GitHub Pages serveert dit bestand met Cache-Control: max-age=600. Alleen
+  // 'no-store' meesturen helpt niet: dat omzeilt de browsercache, maar de CDN
+  // van Pages blijft tot tien minuten een oude kopie uitserveren. Met een
+  // teller die elke 30 seconden opschuift is de URL steeds nieuw voor de CDN,
+  // terwijl bezoekers binnen hetzelfde halve minuutje nog wel samen op één
+  // gecachet antwoord zitten.
+  const VERSIE = Math.floor(Date.now() / 30000);
+
   try {
-    const respons = await fetch(VLAG_BESTAND, { cache: 'no-store' });
+    const respons = await fetch(VLAG_BESTAND + '?v=' + VERSIE, { cache: 'no-store' });
     if (!respons.ok) return;
 
     const lijst = await respons.json();
