@@ -61,6 +61,10 @@ body {
   display: flex;
   flex-direction: column;
 }
+/* In een flex-kolom rekt een item met 'margin: 0 auto' niet mee, maar krimpt
+   het tot zijn inhoud. Zonder deze regel wordt elke sectie zo smal als wat
+   erin staat, in plaats van de volle breedte tot aan zijn max-width. */
+body > * { width: 100%; }
 
 /* ── Header & navigatie ── */
 header {
@@ -206,7 +210,7 @@ nav a.nav-prikbord:hover, nav a.nav-prikbord.actief { background: var(--oranje);
 .kaarten {
   position: relative;
   z-index: 1;
-  max-width: 1100px;
+  max-width: 1320px;
   margin: -3rem auto 0;
   padding: 0 1.5rem 3rem;
   display: grid;
@@ -236,7 +240,7 @@ nav a.nav-prikbord:hover, nav a.nav-prikbord.actief { background: var(--oranje);
 
 /* ── Inhoudssecties ── */
 section.blok {
-  max-width: 1100px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 3rem 1.5rem;
 }
@@ -253,7 +257,9 @@ section.blok > p { max-width: 640px; margin-bottom: 1.75rem; }
 
 .items {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  /* Vier naast elkaar op een breed scherm; wordt het krapper, dan vallen ze
+     vanzelf terug naar drie, twee en uiteindelijk één. */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1.25rem;
 }
 .item {
@@ -374,13 +380,6 @@ footer {
   flex-direction: column;
   align-items: flex-start;
   gap: .4rem;
-}
-.endorser small {
-  display: block;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  font-size: .68rem;
-  opacity: .8;
 }
 /* Het woordmerk van Vlietkinderen, wit uitgevoerd voor op de blauwe balk */
 .endorser-logo {
@@ -804,7 +803,7 @@ footer .admin-link:hover { opacity: 1; }
 /* ── Workshop prikbord: briefjes als post-its ── */
 .prikbord {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 2.25rem 1.75rem;
   padding: 2rem 1.5rem 2.5rem;
   border-radius: 16px;
