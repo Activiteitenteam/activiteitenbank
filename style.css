@@ -106,6 +106,10 @@ nav a.nav-prikbord:hover, nav a.nav-prikbord.actief { background: var(--oranje);
 /* ── Hero: wisselende banners met transparant blauwe overlay ── */
 .hero {
   position: relative;
+  /* Sluit de z-index van de slides, de overlay en de tekst binnen de hero op.
+     Zonder dit staan ze in dezelfde stapel als .kaarten op de homepage, en
+     schuift de overlay (z-index 3) over de kaartjes (z-index 1) heen. */
+  isolation: isolate;
   overflow: hidden;
   background: var(--blauw);
   color: #fff;

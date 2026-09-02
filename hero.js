@@ -14,7 +14,7 @@ const AB_BANNERS = [
 
 (() => {
   const OVERGANG = 1500;  // gelijk aan de duur van slide-op in style.css
-  const WISSEL   = 5000;
+  const WISSEL   = 30000;  // elke 30 seconden een andere foto
 
   const heros = [...document.querySelectorAll('.hero')]
     .filter(hero => hero.querySelector('.hero-overlay'));
@@ -26,12 +26,18 @@ const AB_BANNERS = [
   heros.forEach(hero => {
     const overlay = hero.querySelector('.hero-overlay');
 
-    const slides = AB_BANNERS.map((pad, i) => {
+    const slides = AB_BANNERS.map(() => {
       const slide = document.createElement('div');
-      slide.className = i === 0 ? 'hero-slide actief' : 'hero-slide';
+      slide.className = 'hero-slide';
       hero.insertBefore(slide, overlay);
       return slide;
     });
+
+    // Elke paginaweergave begint bij een willekeurige foto. Anders zie je bij
+    // het doorklikken steeds dezelfde eerste banner, omdat de teller bij
+    // iedere nieuwe pagina weer op nul begint.
+    let huidige = Math.floor(Math.random() * slides.length);
+    slides[huidige].classList.add('actief');
 
     // Een foto wordt pas opgehaald vlak voor hij aan de beurt is. Zonder dit
     // haalt elke bezoeker alle banners tegelijk binnen, ook die hij nooit
@@ -43,13 +49,12 @@ const AB_BANNERS = [
       slide.style.backgroundImage = "url('" + AB_BANNERS[i] + "')";
     };
 
-    laad(0);
+    laad(huidige);
 
     // Eén foto en klaar, of beweging staat uit: niet gaan wisselen.
     if (slides.length < 2 || rustig) return;
 
-    let huidige = 0;
-    laad(1);
+    laad((huidige + 1) % slides.length);
 
     setInterval(() => {
       const vorige = slides[huidige];
