@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -86,6 +86,26 @@
 
     <div class="werkblad-editor">
 
+      <div class="plak-paneel">
+        <button type="button" class="plak-kop" id="plak-kop" aria-expanded="false" aria-controls="plak-inhoud">
+          <span>Plakken uit het vaste format</span>
+          <span class="plak-pijl" aria-hidden="true">▾</span>
+        </button>
+        <div class="plak-inhoud" id="plak-inhoud" hidden>
+          <p class="plak-uitleg">
+            Plak de aangeleverde tekst met <code>**Titel:**</code>, <code>**Inleiding:**</code>,
+            <code>**Kern:**</code> enzovoort. De velden hieronder worden ingevuld; opslaan doe je daarna zelf.
+          </p>
+          <textarea id="plak-tekst" rows="8" spellcheck="false"
+                    placeholder="**Titel:** Zoutdeeg figuren&#10;**Inleiding:** ...&#10;**Kern:** ...&#10;**Slot:** ...&#10;**Aangeleverd door:** Nadia&#10;**Voorgestelde emoji:** 🎨&#10;**Voorgestelde categorie:** Creatief&#10;**Voorgestelde leeftijd:** 4-7 jaar"></textarea>
+          <div class="plak-knoppen">
+            <button type="button" class="knop knop-klein" id="plak-invullen">Velden invullen</button>
+            <button type="button" class="knop knop-secundair knop-klein" id="plak-legen">Wissen</button>
+          </div>
+          <div class="plak-melding" id="plak-melding" hidden></div>
+        </div>
+      </div>
+
   <div class="beheer-paneel" id="beheer-paneel" hidden>
     <h3 id="form-titel">Nieuwe activiteit</h3>
     <form class="formulier" id="activiteit-form">
@@ -154,7 +174,8 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="data.js?v=3"></script>
+<script src="data.js?v=4"></script>
+<script src="activiteit-format.js?v=4"></script>
 <script>
   // ── Supabase login ──
   // De publishable key hieronder is bewust openbaar: die hoort in browsercode.
@@ -446,6 +467,71 @@
     tekenLijst();
   });
 
+  // ── Plakken uit het vaste format ──
+  const plakKop      = document.getElementById('plak-kop');
+  const plakInhoud   = document.getElementById('plak-inhoud');
+  const plakTekst    = document.getElementById('plak-tekst');
+  const plakMelding  = document.getElementById('plak-melding');
+
+  plakKop.addEventListener('click', () => {
+    const open = plakInhoud.hidden;
+    plakInhoud.hidden = !open;
+    plakKop.setAttribute('aria-expanded', String(open));
+    if (open) plakTekst.focus();
+  });
+
+  function toonPlakMelding(soort, kop, regels) {
+    plakMelding.className = 'plak-melding ' + soort;
+    plakMelding.innerHTML = '';
+    const titel = document.createElement('strong');
+    titel.textContent = kop;
+    plakMelding.append(titel);
+    if (regels && regels.length) {
+      const lijst = document.createElement('ul');
+      regels.forEach(r => {
+        const li = document.createElement('li');
+        li.textContent = r;
+        lijst.append(li);
+      });
+      plakMelding.append(lijst);
+    }
+    plakMelding.hidden = false;
+  }
+
+  document.getElementById('plak-invullen').addEventListener('click', () => {
+    const tekst = plakTekst.value.trim();
+    if (!tekst) {
+      toonPlakMelding('fout', 'Er staat nog geen tekst in het vak.', []);
+      return;
+    }
+
+    const uitslag = parseerActiviteitTekst(tekst);
+    if (!uitslag.gelukt) {
+      toonPlakMelding('fout', 'De tekst kon niet verwerkt worden:', uitslag.fouten);
+      return;
+    }
+
+    // Als een nieuwe activiteit invullen, niet als bewerking van een bestaande
+    stopBewerken();
+    const a = uitslag.activiteit;
+    veldTitel.value = a.titel;
+    veldBeschrijving.value = a.beschrijving;
+    veldDoor.value = a.aangeleverdDoor;
+    zetEmoji(a.emoji);
+    zetLabels(a.labels);
+    openFormulier();
+
+    toonPlakMelding('gelukt', 'Velden ingevuld. Controleer ze en klik daarna op Toevoegen.',
+      [a.emoji + ' ' + a.titel, 'Labels: ' + a.labels.join(', ')]);
+    veldTitel.focus();
+  });
+
+  document.getElementById('plak-legen').addEventListener('click', () => {
+    plakTekst.value = '';
+    plakMelding.hidden = true;
+    plakTekst.focus();
+  });
+
   // ── Onderhoudsmodus ──
   const onderhoudPaneel = document.getElementById('onderhoud-paneel');
   const onderhoudStatus = document.getElementById('onderhoud-status');
@@ -496,7 +582,7 @@
     }
   })();
 </script>
-<script src="hero.js?v=3"></script>
-<script src="thema.js?v=3"></script>
+<script src="hero.js?v=4"></script>
+<script src="thema.js?v=4"></script>
 </body>
 </html>

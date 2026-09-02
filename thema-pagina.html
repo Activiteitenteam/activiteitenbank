@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thema - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -13,7 +13,7 @@
     if (bewaardThema === 'donker') document.documentElement.dataset.thema = 'donker';
   } catch (e) {}
 </script>
-<script src="onderhoudmodus.js?v=3"></script>
+<script src="onderhoudmodus.js?v=4"></script>
 </head>
 <body>
 
@@ -75,7 +75,7 @@
   </div>
 </footer>
 
-<script src="themas.js?v=3"></script>
+<script src="themas.js?v=4"></script>
 <script>
   const nr = Number(new URLSearchParams(location.search).get('nr'));
   const gekozenThema = AB_THEMAS[nr];
@@ -90,7 +90,7 @@
     document.getElementById('thema-tekst').textContent = gekozenThema.samenvatting;
   }
 </script>
-<script src="hero.js?v=3"></script>
-<script src="thema.js?v=3"></script>
+<script src="hero.js?v=4"></script>
+<script src="thema.js?v=4"></script>
 </body>
 </html>

@@ -1059,3 +1059,85 @@ footer .admin-link:hover { opacity: 1; }
 :root[data-thema="donker"] .skelet {
   box-shadow: 0 0 0 1px var(--rand), 0 3px 10px rgba(0, 0, 0, .35);
 }
+
+/* ── Plakken uit het vaste format (adminscherm) ── */
+.plak-paneel {
+  background: var(--oppervlak);
+  border-radius: 14px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .07);
+  border-left: 6px solid var(--geel);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+:root[data-thema="donker"] .plak-paneel {
+  box-shadow: 0 0 0 1px var(--rand), 0 3px 10px rgba(0, 0, 0, .35);
+}
+.plak-kop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  padding: .9rem 1.25rem;
+  border: 0;
+  background: none;
+  color: var(--tekst);
+  cursor: pointer;
+}
+.plak-kop:hover { color: var(--blauw); }
+.plak-pijl { transition: transform .2s ease; color: var(--zachter); }
+.plak-kop[aria-expanded="true"] .plak-pijl { transform: rotate(180deg); }
+
+.plak-inhoud { padding: 0 1.25rem 1.25rem; }
+.plak-uitleg {
+  font-size: .88rem;
+  color: var(--zacht);
+  margin-bottom: .8rem;
+}
+.plak-uitleg code {
+  font-size: .85em;
+  background: var(--gebroken-wit);
+  border-radius: 4px;
+  padding: .1rem .3rem;
+}
+#plak-tekst {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: .85rem;
+  line-height: 1.5;
+  width: 100%;
+  padding: .7rem .85rem;
+  border: 2px solid var(--rand);
+  border-radius: 10px;
+  background: var(--oppervlak);
+  color: var(--tekst);
+  resize: vertical;
+}
+#plak-tekst:focus-visible { outline: 2px solid var(--blauw); outline-offset: 1px; }
+.plak-knoppen {
+  display: flex;
+  gap: .5rem;
+  margin-top: .75rem;
+}
+
+.plak-melding {
+  margin-top: .9rem;
+  padding: .8rem 1rem;
+  border-radius: 10px;
+  font-size: .88rem;
+  line-height: 1.5;
+}
+.plak-melding ul { margin: .45rem 0 0 1.1rem; }
+.plak-melding li { margin-bottom: .2rem; }
+.plak-melding.fout {
+  background: rgba(230, 90, 113, .12);
+  border-left: 4px solid var(--roze);
+  color: var(--tekst);
+}
+.plak-melding.gelukt {
+  background: rgba(109, 176, 119, .16);
+  border-left: 4px solid var(--groen);
+  color: var(--tekst);
+}
