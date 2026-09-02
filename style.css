@@ -478,37 +478,9 @@ footer .admin-link:hover { opacity: 1; }
 
 .fout { color: var(--roze); font-weight: 700; margin-top: .75rem; }
 
-.dash-kop {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
 .dash-kop h2 { color: var(--blauw); }
 
 /* Tegel om een nieuwe activiteit toe te voegen */
-.tegel-toevoegen {
-  display: block;
-  width: 100%;
-  font: inherit;
-  font-weight: 800;
-  font-size: 1.15rem;
-  color: var(--blauw);
-  background: transparent;
-  border: 3px dashed var(--blauw);
-  border-radius: 18px;
-  padding: 1.75rem;
-  cursor: pointer;
-  margin-bottom: 2rem;
-  transition: background .15s, transform .15s;
-}
-.tegel-toevoegen:hover {
-  background: rgba(0, 113, 185, .08);
-  transform: translateY(-2px);
-}
-
 /* Labelkeuze: aanklikbare presets */
 .label-keuze {
   display: flex;
@@ -920,3 +892,88 @@ footer .admin-link:hover { opacity: 1; }
   margin-top: .35rem;
   max-width: 52ch;
 }
+
+/* ── Adminwerkblad: lijst links, editor rechts ── */
+.werkblad {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+.werkbalk {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1.1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--rand);
+}
+.werkbalk-kop {
+  display: flex;
+  align-items: baseline;
+  gap: .7rem;
+  flex-wrap: wrap;
+}
+.werkbalk-kop h2 { font-size: 1.35rem; color: var(--blauw); }
+.werkbalk-telling { font-size: .85rem; color: var(--zachter); }
+.werkbalk-acties {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.werkbalk-zoek {
+  font: inherit;
+  font-size: .9rem;
+  padding: .42rem .9rem;
+  min-width: 230px;
+  border: 1px solid var(--rand);
+  border-radius: 999px;
+  background: var(--oppervlak);
+  color: var(--tekst);
+}
+.werkbalk-zoek:focus-visible { outline: 2px solid var(--blauw); outline-offset: 1px; }
+
+.werkblad-kolommen {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+/* De editor blijft in beeld terwijl je door een lange lijst scrolt.
+   De offset houdt rekening met de plakkende header erboven. */
+.werkblad-editor {
+  position: sticky;
+  top: 90px;
+}
+@media (max-width: 900px) {
+  .werkblad-kolommen { grid-template-columns: minmax(0, 1fr); }
+  .werkblad-editor { position: static; }
+}
+
+/* Rijen zijn nu aanklikbaar: de hele rij opent de editor */
+.werkblad-lijst .beheer-rij { cursor: pointer; }
+.beheer-rij.gekozen {
+  border-left-color: var(--blauw);
+  box-shadow: 0 0 0 2px var(--blauw);
+}
+
+.werkblad-leeg,
+.editor-leeg {
+  color: var(--zacht);
+  font-size: .95rem;
+  text-align: center;
+  padding: 2.25rem 1.25rem;
+  border: 1px dashed var(--rand);
+  border-radius: 14px;
+}
+
+/* In de smalle lijstkolom staan de knoppen altijd onder de tekst; anders
+   springen ze per rij van plek, afhankelijk van hoe lang de tekst is. */
+.werkblad-lijst .beheer-rij {
+  flex-direction: column;
+  align-items: stretch;
+  gap: .8rem;
+}
+.werkblad-lijst .beheer-rij .acties { justify-content: flex-end; }

@@ -31,7 +31,7 @@
   </div>
 </header>
 
-<div class="hero hero-sub hero-admin">
+<div class="hero hero-sub hero-admin" id="hero-blok">
   <div class="hero-overlay"></div>
   <div class="hero-inhoud">
     <h1>Admin</h1>
@@ -54,10 +54,19 @@
 </section>
 
 <!-- Dashboard -->
-<section class="blok" id="dashboard" hidden>
-  <div class="dash-kop">
-    <h2>Activiteiten beheren</h2>
-    <button type="button" class="knop knop-secundair knop-klein" id="uitloggen">Uitloggen</button>
+<section class="werkblad" id="dashboard" hidden>
+  <div class="werkbalk">
+    <div class="werkbalk-kop">
+      <h2>Activiteiten beheren</h2>
+      <span class="werkbalk-telling" id="beheer-telling"></span>
+    </div>
+    <div class="werkbalk-acties">
+      <input type="search" class="werkbalk-zoek" id="beheer-zoek"
+             placeholder="Zoeken op titel, label of naam" aria-label="Zoeken in activiteiten">
+      <button type="button" class="knop knop-klein" id="toevoeg-tegel">+ Activiteit</button>
+      <button type="button" class="knop knop-secundair knop-klein" id="herstel-knop">Vernieuwen</button>
+      <button type="button" class="knop knop-secundair knop-klein" id="uitloggen">Uitloggen</button>
+    </div>
   </div>
 
   <div class="onderhoud-paneel" id="onderhoud-paneel">
@@ -69,7 +78,13 @@
     <button type="button" class="knop knop-secundair knop-klein" id="onderhoud-knop">Aanzetten</button>
   </div>
 
-  <button type="button" class="tegel-toevoegen" id="toevoeg-tegel">+ Activiteit toevoegen</button>
+  <div class="werkblad-kolommen">
+    <div class="werkblad-lijst">
+      <div id="beheer-lijst"></div>
+      <p class="werkblad-leeg" id="beheer-geen" hidden>Geen activiteiten gevonden.</p>
+    </div>
+
+    <div class="werkblad-editor">
 
   <div class="beheer-paneel" id="beheer-paneel" hidden>
     <h3 id="form-titel">Nieuwe activiteit</h3>
@@ -113,9 +128,12 @@
     </form>
   </div>
 
-  <div id="beheer-lijst"></div>
-
-  <button type="button" class="knop knop-secundair knop-klein" id="herstel-knop">Vernieuwen</button>
+      <p class="editor-leeg" id="editor-leeg">
+        Kies links een activiteit om te bewerken, of maak er een nieuwe met
+        <strong>+ Activiteit</strong>.
+      </p>
+    </div>
+  </div>
 </section>
 
 <footer>
@@ -151,6 +169,11 @@
   const beheerLijst = document.getElementById('beheer-lijst');
   const beheerPaneel = document.getElementById('beheer-paneel');
   const toevoegTegel = document.getElementById('toevoeg-tegel');
+  const heroBlok = document.getElementById('hero-blok');
+  const zoekVeld = document.getElementById('beheer-zoek');
+  const beheerTelling = document.getElementById('beheer-telling');
+  const beheerGeen = document.getElementById('beheer-geen');
+  const editorLeeg = document.getElementById('editor-leeg');
   const formTitel = document.getElementById('form-titel');
   const veldTitel = document.getElementById('veld-titel');
   const veldBeschrijving = document.getElementById('veld-beschrijving');
@@ -215,6 +238,9 @@
   function toonDashboard(ingelogd) {
     loginBlok.hidden = ingelogd;
     dashboard.hidden = !ingelogd;
+    // De banner hoort bij het inlogscherm; in het werkblad is die verspilde
+    // ruimte, want dan ben je aan het werk en niet aan het kijken.
+    heroBlok.hidden = ingelogd;
   }
 
   // ── Login ──
@@ -243,12 +269,41 @@
   });
 
   // ── Lijst tekenen ──
+  // Alles waar de zoekbalk op mag matchen
+  function zoekbareTekst(a) {
+    return [a.titel, a.beschrijving, a.aangeleverdDoor, ...labelsVan(a)]
+      .filter(Boolean).join(' ').toLowerCase();
+  }
+
+  // Zet de nadruk op de rij die op dit moment in de editor staat
+  function markeerSelectie() {
+    beheerLijst.querySelectorAll('.beheer-rij').forEach(rij => {
+      const gekozen = bewerkIndex !== null && Number(rij.dataset.nr) === bewerkIndex;
+      rij.classList.toggle('gekozen', gekozen);
+    });
+  }
+
   function tekenLijst() {
     werkOnderhoudBij();
     beheerLijst.innerHTML = '';
-    activiteiten.forEach((a, i) => {
+
+    // De zoekbalk verbergt rijen, maar bewerken en verwijderen werken op het
+    // volgnummer in de volledige lijst. Dat nummer reist dus mee; zonder dat
+    // zou je bij een actieve zoekterm de verkeerde activiteit te pakken hebben.
+    const zoek = zoekVeld.value.trim().toLowerCase();
+    const paren = activiteiten
+      .map((activiteit, nr) => ({ activiteit, nr }))
+      .filter(({ activiteit }) => !zoek || zoekbareTekst(activiteit).includes(zoek));
+
+    beheerTelling.textContent = zoek
+      ? paren.length + ' van ' + activiteiten.length
+      : activiteiten.length + (activiteiten.length === 1 ? ' activiteit' : ' activiteiten');
+    beheerGeen.hidden = paren.length > 0;
+
+    paren.forEach(({ activiteit: a, nr: i }) => {
       const rij = document.createElement('div');
       rij.className = 'beheer-rij';
+      rij.dataset.nr = String(i);
 
       const info = document.createElement('div');
       info.className = 'info';
@@ -280,7 +335,7 @@
       verwijder.className = 'knop knop-gevaar knop-klein';
       verwijder.textContent = 'Verwijderen';
       verwijder.addEventListener('click', async () => {
-        if (confirm(`"${a.titel}" verwijderen?`)) {
+        if (confirm('"' + a.titel + '" verwijderen?')) {
           const kopie = activiteiten.slice();
           kopie.splice(i, 1);
           const token = await huidigToken();
@@ -296,10 +351,21 @@
       });
       acties.append(bewerk, verwijder);
 
+      // Klikken op de rij zelf opent hem ook; klikken op de knoppen niet
+      // dubbel afhandelen.
+      rij.addEventListener('click', (e) => {
+        if (e.target.closest('.acties')) return;
+        startBewerken(i);
+      });
+
       rij.append(info, acties);
       beheerLijst.append(rij);
     });
+
+    markeerSelectie();
   }
+
+  zoekVeld.addEventListener('input', tekenLijst);
 
   // ── Toevoegen / bewerken ──
   // De tegel opent het (lege) formulier voor een nieuwe activiteit
@@ -311,7 +377,7 @@
 
   function openFormulier() {
     beheerPaneel.hidden = false;
-    toevoegTegel.hidden = true;
+    editorLeeg.hidden = true;
   }
 
   function startBewerken(i) {
@@ -324,6 +390,7 @@
     formTitel.textContent = 'Activiteit bewerken';
     opslaanKnop.textContent = 'Opslaan';
     openFormulier();
+    markeerSelectie();
     veldTitel.focus();
   }
 
@@ -337,7 +404,8 @@
     formTitel.textContent = 'Nieuwe activiteit';
     opslaanKnop.textContent = 'Toevoegen';
     beheerPaneel.hidden = true;
-    toevoegTegel.hidden = false;
+    editorLeeg.hidden = false;
+    markeerSelectie();
   }
 
   annuleerKnop.addEventListener('click', stopBewerken);
@@ -390,9 +458,8 @@
     onderhoudStatus.textContent = aan
       ? 'Bezoekers worden doorgestuurd naar de onderhoudspagina. Jij kunt hier gewoon doorwerken.'
       : 'Bezoekers zien de gewone site.';
-    onderhoudUitleg.textContent = 'Het duurt ongeveer een minuut voor een wijziging bij '
-      + 'bezoekers doorkomt: GitHub Pages moet de site eerst opnieuw publiceren. '
-      + 'Nog een keer klikken helpt niet, en zet hem juist weer terug.';
+    onderhoudUitleg.textContent = 'Na ongeveer een minuut zichtbaar voor bezoekers. '
+      + 'Nog een keer klikken zet hem juist terug.';
     onderhoudKnop.textContent = aan ? 'Uitzetten' : 'Aanzetten';
   }
 
