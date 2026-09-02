@@ -69,17 +69,60 @@ function labelsVan(activiteit) {
   return [];
 }
 
+// ── Onderhoudsmodus ──
+// De stand wordt als instellingsregel in dezelfde lijst bewaard, omdat de
+// backend uitsluitend een array accepteert. Zo'n regel is geen activiteit
+// en mag dus nooit op de site verschijnen.
+const AB_INSTELLING_ONDERHOUD = 'onderhoud';
+let AB_ONDERHOUD = false;
+
+function isInstelling(item) {
+  return Boolean(item) && typeof item._instelling === 'string';
+}
+
+// Haalt de instellingsregels uit de opgehaalde lijst, onthoudt de stand en
+// geeft alleen de echte activiteiten terug.
+function scheidInstellingen(rauw) {
+  if (!Array.isArray(rauw)) return [];
+  const vlag = rauw.find(i => isInstelling(i) && i._instelling === AB_INSTELLING_ONDERHOUD);
+  AB_ONDERHOUD = Boolean(vlag && vlag.aan);
+  return rauw.filter(i => !isInstelling(i));
+}
+
+// Staat de onderhoudsmodus aan volgens de laatst opgehaalde lijst?
+function onderhoudAan() {
+  return AB_ONDERHOUD;
+}
+
+// Zet de onderhoudsmodus aan of uit en bewaart de lijst opnieuw.
+// Lukt het opslaan niet, dan draait de stand terug.
+async function zetOnderhoud(aan, lijst, token) {
+  const vorige = AB_ONDERHOUD;
+  AB_ONDERHOUD = Boolean(aan);
+  const gelukt = await bewaarActiviteiten(lijst, token);
+  if (!gelukt) AB_ONDERHOUD = vorige;
+  return gelukt;
+}
+
 // Haalt de actuele activiteiten op bij de backend. Let op: dit is nu een
 // async functie (geeft een Promise terug), dus gebruik 'await laadActiviteiten()'.
 async function laadActiviteiten() {
   try {
     const respons = await fetch(AB_BACKEND_URL + '/api/activiteiten');
     if (!respons.ok) throw new Error('Backend gaf een foutstatus terug');
-    return await respons.json();
+    return scheidInstellingen(await respons.json());
   } catch (e) {
     console.warn('Kon activiteiten niet ophalen bij de backend, val terug op standaardlijst.', e);
     return STANDAARD_ACTIVITEITEN.map(a => ({ ...a }));
   }
+}
+
+// Plakt de instellingsregels weer voor de lijst. Zonder dit zou een gewone
+// bewerking in het adminscherm de onderhoudsmodus ongemerkt uitzetten.
+function metInstellingen(lijst) {
+  const schoon = lijst.filter(i => !isInstelling(i));
+  if (!AB_ONDERHOUD) return schoon;
+  return [{ _instelling: AB_INSTELLING_ONDERHOUD, aan: true }, ...schoon];
 }
 
 // Slaat de volledige lijst op via de backend. Vereist een geldig Supabase
@@ -92,7 +135,7 @@ async function bewaarActiviteiten(lijst, token) {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       },
-      body: JSON.stringify({ activiteiten: lijst })
+      body: JSON.stringify({ activiteiten: metInstellingen(lijst) })
     });
     return respons.ok;
   } catch (e) {

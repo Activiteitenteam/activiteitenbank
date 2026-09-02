@@ -63,6 +63,14 @@
     <button type="button" class="knop knop-secundair knop-klein" id="uitloggen">Uitloggen</button>
   </div>
 
+  <div class="onderhoud-paneel" id="onderhoud-paneel">
+    <div>
+      <h3>Onderhoudsmodus</h3>
+      <p id="onderhoud-status">Bezoekers zien de gewone site.</p>
+    </div>
+    <button type="button" class="knop knop-secundair knop-klein" id="onderhoud-knop">Aanzetten</button>
+  </div>
+
   <button type="button" class="tegel-toevoegen" id="toevoeg-tegel">+ Activiteit toevoegen</button>
 
   <div class="beheer-paneel" id="beheer-paneel" hidden>
@@ -238,6 +246,7 @@
 
   // ── Lijst tekenen ──
   function tekenLijst() {
+    werkOnderhoudBij();
     beheerLijst.innerHTML = '';
     activiteiten.forEach((a, i) => {
       const rij = document.createElement('div');
@@ -369,6 +378,32 @@
     activiteiten = await laadActiviteiten();
     stopBewerken();
     tekenLijst();
+  });
+
+  // ── Onderhoudsmodus ──
+  const onderhoudPaneel = document.getElementById('onderhoud-paneel');
+  const onderhoudStatus = document.getElementById('onderhoud-status');
+  const onderhoudKnop   = document.getElementById('onderhoud-knop');
+
+  function werkOnderhoudBij() {
+    const aan = onderhoudAan();
+    onderhoudPaneel.classList.toggle('actief', aan);
+    onderhoudStatus.textContent = aan
+      ? 'Bezoekers worden doorgestuurd naar de onderhoudspagina. Jij kunt hier gewoon doorwerken.'
+      : 'Bezoekers zien de gewone site.';
+    onderhoudKnop.textContent = aan ? 'Uitzetten' : 'Aanzetten';
+  }
+
+  onderhoudKnop.addEventListener('click', async () => {
+    const aan = !onderhoudAan();
+    onderhoudKnop.disabled = true;
+    const token = await huidigToken();
+    const gelukt = token && await zetOnderhoud(aan, activiteiten, token);
+    onderhoudKnop.disabled = false;
+    if (!gelukt) {
+      alert('De onderhoudsmodus kon niet worden opgeslagen. Probeer het opnieuw of log opnieuw in.');
+    }
+    werkOnderhoudBij();
   });
 
   // Al ingelogd? Supabase bewaart de sessie zelf, check die bij het laden.

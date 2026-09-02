@@ -682,7 +682,8 @@ footer .admin-link:hover { opacity: 1; }
 :root[data-thema="donker"] .detail-kaart,
 :root[data-thema="donker"] .login-kaart,
 :root[data-thema="donker"] .beheer-paneel,
-:root[data-thema="donker"] .beheer-rij {
+:root[data-thema="donker"] .beheer-rij,
+:root[data-thema="donker"] .onderhoud-paneel {
   box-shadow: 0 0 0 1px var(--rand), 0 3px 10px rgba(0, 0, 0, .35);
 }
 
@@ -725,3 +726,22 @@ footer .admin-link:hover { opacity: 1; }
   color: var(--blauw);
 }
 :root[data-thema="donker"] .knop-licht { color: var(--tekst); }
+
+/* ── Onderhoudsmodus in het adminscherm ── */
+.onderhoud-paneel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: var(--oppervlak);
+  border-radius: 14px;
+  padding: 1rem 1.4rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .07);
+  border-left: 6px solid var(--rand);
+  margin-bottom: 1.5rem;
+}
+/* Staat de modus aan, dan valt het paneel op: de site is dan afgesloten */
+.onderhoud-paneel.actief { border-left-color: var(--oranje); }
+.onderhoud-paneel h3 { font-size: 1.05rem; margin-bottom: .15rem; }
+.onderhoud-paneel p  { font-size: .9rem; color: var(--zacht); max-width: 46ch; }
