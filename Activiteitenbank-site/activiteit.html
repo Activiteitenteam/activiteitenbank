@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activiteit - Activiteitenbank.nl</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="index.html">
+      <span>Acti</span><span>vi</span><span>tei</span><span>ten</span><span>ba</span><span>nk</span><span class="nl">.nl</span>
+    </a>
+    <nav aria-label="Hoofdmenu">
+      <ul>
+        <li><a class="nav-losse actief" href="losse-activiteiten.html">Losse activiteiten</a></li>
+        <li><a class="nav-thema" href="thema-paginas.html">Thema pagina's</a></li>
+        <li><a class="nav-prikbord" href="workshop-prikbord.html">Workshop prikbord</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="hero hero-sub hero-losse">
+  <div class="hero-inhoud">
+    <h1 id="act-titel">Activiteit</h1>
+  </div>
+</div>
+
+<section class="blok titel-losse">
+  <a class="terug-link" href="losse-activiteiten.html">&larr; Terug naar losse activiteiten</a>
+  <div class="detail-kaart" id="detail-kaart">
+    <p id="act-beschrijving"></p>
+    <p class="door" id="act-door" hidden></p>
+    <div id="act-labels"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="endorser">
+      <span class="v">V</span>
+      <span class="tekst">
+        <small>In samenwerking met</small>
+        <strong>Vlietkinderen</strong>
+      </span>
+    </div>
+    <p class="copy">&copy; 2026 Activiteitenbank.nl &middot; <a class="admin-link" href="admin.html">Admin login</a></p>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script>
+  const nr = Number(new URLSearchParams(location.search).get('nr'));
+  const activiteit = laadActiviteiten()[nr];
+
+  if (!activiteit) {
+    document.getElementById('act-titel').textContent = 'Activiteit niet gevonden';
+    document.getElementById('detail-kaart').innerHTML =
+      '<p>Deze activiteit bestaat niet (meer). Ga terug naar het overzicht.</p>';
+  } else {
+    document.title = activiteit.titel + ' - Activiteitenbank.nl';
+    document.getElementById('act-titel').textContent =
+      (activiteit.emoji ? activiteit.emoji + ' ' : '') + activiteit.titel;
+    document.getElementById('act-beschrijving').innerHTML =
+      formatteerBeschrijving(activiteit.beschrijving);
+
+    if (activiteit.aangeleverdDoor) {
+      const door = document.getElementById('act-door');
+      door.textContent = 'Aangeleverd door ' + activiteit.aangeleverdDoor;
+      door.hidden = false;
+    }
+
+    const labelsVak = document.getElementById('act-labels');
+    labelsVan(activiteit).forEach(naam => {
+      const label = document.createElement('span');
+      label.className = 'label';
+      label.textContent = naam;
+      labelsVak.append(label);
+    });
+  }
+</script>
+<script src="fade.js"></script>
+
+</body>
+</html>
