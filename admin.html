@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -146,6 +146,71 @@
     </div>
   </div>
 
+  <section class="beheer-extra">
+    <div class="plak-paneel">
+      <button type="button" class="plak-kop" id="ws-kop"
+              aria-expanded="false" aria-controls="ws-inhoud">
+        <span>Workshops op het prikbord</span>
+        <span class="plak-pijl" aria-hidden="true">&#9662;</span>
+      </button>
+      <div class="plak-inhoud" id="ws-inhoud" hidden>
+        <div class="extra-lijst" id="ws-lijst"></div>
+        <form class="formulier extra-form" id="ws-form">
+          <h4 id="ws-formtitel">Nieuw item</h4>
+          <div class="veld-groep">
+            <label for="ws-titel">Titel</label>
+            <input type="text" id="ws-titel" placeholder="Bijv. Djemb&eacute; voor kids" required>
+          </div>
+          <div class="veld-groep">
+            <label for="ws-tekst">Korte omschrijving</label>
+            <input type="text" id="ws-tekst" placeholder="Wat houdt de workshop in?">
+          </div>
+          <div class="veld-groep">
+            <label for="ws-door">Aangeboden door</label>
+            <input type="text" id="ws-door" placeholder="Wie geeft hem?">
+          </div>
+          <div class="veld-groep">
+            <label for="ws-duur">Duur</label>
+            <input type="text" id="ws-duur" placeholder="Bijv. 45 minuten">
+          </div>
+          <div class="form-knoppen">
+            <button type="button" class="knop knop-secundair knop-klein" id="ws-annuleer" hidden>Annuleren</button>
+            <button type="submit" class="knop knop-klein" id="ws-opslaan">Toevoegen</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="plak-paneel">
+      <button type="button" class="plak-kop" id="th-kop"
+              aria-expanded="false" aria-controls="th-inhoud">
+        <span>Thema pagina's</span>
+        <span class="plak-pijl" aria-hidden="true">&#9662;</span>
+      </button>
+      <div class="plak-inhoud" id="th-inhoud" hidden>
+        <div class="extra-lijst" id="th-lijst"></div>
+        <form class="formulier extra-form" id="th-form">
+          <h4 id="th-formtitel">Nieuw item</h4>
+          <div class="veld-groep">
+            <label for="th-titel">Titel</label>
+            <input type="text" id="th-titel" placeholder="Bijv. Zomer &amp; water" required>
+          </div>
+          <div class="veld-groep">
+            <label for="th-tekst">Korte omschrijving</label>
+            <input type="text" id="th-tekst" placeholder="Waar gaat het thema over?">
+          </div>
+          <div class="veld-groep">
+            <label for="th-aantal">Aantal activiteiten</label>
+            <input type="text" id="th-aantal" placeholder="Laat leeg als je het nog niet weet">
+          </div>
+          <div class="form-knoppen">
+            <button type="button" class="knop knop-secundair knop-klein" id="th-annuleer" hidden>Annuleren</button>
+            <button type="submit" class="knop knop-klein" id="th-opslaan">Toevoegen</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
   <section class="overig" aria-labelledby="overig-kop">
     <h3 class="overig-kop" id="overig-kop">Overig</h3>
 
@@ -190,8 +255,8 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="data.js?v=5"></script>
-<script src="activiteit-format.js?v=5"></script>
+<script src="data.js?v=6"></script>
+<script src="activiteit-format.js?v=6"></script>
 <script>
   // ── Supabase login ──
   // De publishable key hieronder is bewust openbaar: die hoort in browsercode.
@@ -548,6 +613,174 @@
     plakTekst.focus();
   });
 
+  // ── Beheer van workshops en thema's ──
+  // Allebei simpele lijstjes met dezelfde bewerkingen, dus één functie die
+  // met een beschrijving van de velden wordt aangeroepen. Opslaan gaat via
+  // dezelfde weg als de activiteiten: metInstellingen in data.js plakt de
+  // lijst er weer voor bij het wegschrijven.
+  function beheerLijstje(cfg) {
+    const kop      = document.getElementById(cfg.sleutel + '-kop');
+    const inhoud   = document.getElementById(cfg.sleutel + '-inhoud');
+    const lijstVak = document.getElementById(cfg.sleutel + '-lijst');
+    const form     = document.getElementById(cfg.sleutel + '-form');
+    const formKop  = document.getElementById(cfg.sleutel + '-formtitel');
+    const opslaan  = document.getElementById(cfg.sleutel + '-opslaan');
+    const annuleer = document.getElementById(cfg.sleutel + '-annuleer');
+    const invoer   = {};
+    cfg.velden.forEach(v => { invoer[v] = document.getElementById(cfg.sleutel + '-' + v); });
+
+    let bewerkt = null;   // null = nieuw item
+
+    kop.addEventListener('click', () => {
+      const open = inhoud.hidden;
+      inhoud.hidden = !open;
+      kop.setAttribute('aria-expanded', String(open));
+      if (open) teken();
+    });
+
+    function leegForm() {
+      bewerkt = null;
+      cfg.velden.forEach(v => { invoer[v].value = ''; });
+      formKop.textContent = cfg.nieuwKop;
+      opslaan.textContent = 'Toevoegen';
+      annuleer.hidden = true;
+    }
+
+    function bewerk(i) {
+      const item = cfg.lees()[i];
+      bewerkt = i;
+      cfg.velden.forEach(v => { invoer[v].value = item[v] == null ? '' : String(item[v]); });
+      formKop.textContent = cfg.bewerkKop;
+      opslaan.textContent = 'Opslaan';
+      annuleer.hidden = false;
+      invoer[cfg.velden[0]].focus();
+    }
+
+    async function bewaar(nieuweLijst, watGingMis) {
+      const vorige = cfg.lees();
+      cfg.zet(nieuweLijst);
+      const token = await huidigToken();
+      const gelukt = token && await bewaarActiviteiten(activiteiten, token);
+      if (!gelukt) {
+        cfg.zet(vorige);          // stand terugdraaien, anders lijkt het gelukt
+        alert(watGingMis + ' is niet gelukt. Probeer het opnieuw of log opnieuw in.');
+      }
+      teken();
+      return gelukt;
+    }
+
+    function teken() {
+      const items = cfg.lees();
+      lijstVak.innerHTML = '';
+
+      if (items.length === 0) {
+        const leeg = document.createElement('p');
+        leeg.className = 'extra-leeg';
+        leeg.textContent = cfg.leegTekst;
+        lijstVak.append(leeg);
+        return;
+      }
+
+      items.forEach((item, i) => {
+        const rij = document.createElement('div');
+        rij.className = 'extra-rij';
+
+        const info = document.createElement('div');
+        const titel = document.createElement('strong');
+        titel.textContent = item.titel || '(zonder titel)';
+        const bij = document.createElement('span');
+        bij.className = 'extra-bijschrift';
+        bij.textContent = cfg.bijschrift(item);
+        info.append(titel, bij);
+
+        const acties = document.createElement('div');
+        acties.className = 'acties';
+
+        const bewerkKnop = document.createElement('button');
+        bewerkKnop.type = 'button';
+        bewerkKnop.className = 'knop knop-klein';
+        bewerkKnop.textContent = 'Bewerken';
+        bewerkKnop.addEventListener('click', () => bewerk(i));
+
+        const wegKnop = document.createElement('button');
+        wegKnop.type = 'button';
+        wegKnop.className = 'knop knop-gevaar knop-klein';
+        wegKnop.textContent = 'Verwijderen';
+        wegKnop.addEventListener('click', async () => {
+          if (!confirm('"' + (item.titel || 'dit item') + '" verwijderen?')) return;
+          const kopie = cfg.lees();
+          kopie.splice(i, 1);
+          if (await bewaar(kopie, 'Verwijderen')) leegForm();
+        });
+
+        acties.append(bewerkKnop, wegKnop);
+        rij.append(info, acties);
+        lijstVak.append(rij);
+      });
+    }
+
+    annuleer.addEventListener('click', leegForm);
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const item = cfg.bouw(invoer);
+      if (!item) return;
+
+      const kopie = cfg.lees();
+      if (bewerkt === null) kopie.push(item); else kopie[bewerkt] = item;
+
+      opslaan.disabled = true;
+      try {
+        if (await bewaar(kopie, 'Opslaan')) leegForm();
+      } finally {
+        opslaan.disabled = false;
+      }
+    });
+
+    leegForm();
+    return { teken };
+  }
+
+  const beheerWorkshops = beheerLijstje({
+    sleutel: 'ws',
+    velden: ['titel', 'tekst', 'door', 'duur'],
+    nieuwKop: 'Nieuwe workshop',
+    bewerkKop: 'Workshop bewerken',
+    leegTekst: 'Nog geen workshops op het prikbord.',
+    lees: () => workshopsLijst(),
+    zet: items => zetWorkshops(items),
+    bijschrift: w => [w.door ? 'door ' + w.door : '', w.duur].filter(Boolean).join(' · '),
+    bouw: invoer => {
+      const titel = invoer.titel.value.trim();
+      if (!titel) return null;
+      return {
+        titel,
+        samenvatting: invoer.tekst.value.trim(),
+        door: invoer.door.value.trim(),
+        duur: invoer.duur.value.trim()
+      };
+    }
+  });
+
+  const beheerThemas = beheerLijstje({
+    sleutel: 'th',
+    velden: ['titel', 'tekst', 'aantal'],
+    nieuwKop: 'Nieuw thema',
+    bewerkKop: 'Thema bewerken',
+    leegTekst: "Nog geen thema's.",
+    lees: () => themasLijst(),
+    zet: items => zetThemas(items),
+    bijschrift: t => (t.aantal ? t.aantal + ' activiteiten' : 'aantal nog onbekend'),
+    bouw: invoer => {
+      const titel = invoer.titel.value.trim();
+      if (!titel) return null;
+      const aantal = parseInt(invoer.aantal.value, 10);
+      const thema = { titel, samenvatting: invoer.tekst.value.trim() };
+      if (Number.isFinite(aantal) && aantal > 0) thema.aantal = aantal;
+      return thema;
+    }
+  });
+
   // ── Logboek: de commitgeschiedenis van activiteiten.json ──
   // De backend commit elke opslagactie met het e-mailadres van de admin erin,
   // dus die geschiedenis is het logboek. Openbare repo, dus geen sleutel nodig.
@@ -672,7 +905,7 @@
     }
   })();
 </script>
-<script src="hero.js?v=5"></script>
-<script src="thema.js?v=5"></script>
+<script src="hero.js?v=6"></script>
+<script src="thema.js?v=6"></script>
 </body>
 </html>

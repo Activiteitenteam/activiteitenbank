@@ -79,7 +79,37 @@ function labelsVan(activiteit) {
 // backend uitsluitend een array accepteert. Zo'n regel is geen activiteit
 // en mag dus nooit op de site verschijnen.
 const AB_INSTELLING_ONDERHOUD = 'onderhoud';
+const AB_INSTELLING_WORKSHOPS = 'workshops';
+const AB_INSTELLING_THEMAS    = 'themas';
+
 let AB_ONDERHOUD = false;
+
+// Workshops en thema's worden op dezelfde manier bewaard: als instellingsregel
+// met een items-lijst erin. Staat er nog niets in de opslag, dan gelden deze
+// standaardlijsten, zodat de site niet leeg is voordat er iets is ingevuld.
+const AB_STANDAARD_WORKSHOPS = [
+  { titel: 'Djembé voor kids',
+    samenvatting: 'Trommelworkshop van 45 minuten, incl. instrumenten.',
+    door: 'Sam', duur: '45 minuten' },
+  { titel: 'Theater & verkleedpret',
+    samenvatting: 'Toneelspelletjes en een mini-voorstelling maken.',
+    door: 'Nadia', duur: '60 minuten' },
+  { titel: 'Proefjes-lab',
+    samenvatting: 'Veilige wetenschapsproefjes met huis-tuin-en-keukenspullen.',
+    door: 'Kim', duur: '45 minuten' }
+];
+
+const AB_STANDAARD_THEMAS = [
+  { titel: 'Zomer & water',
+    samenvatting: 'Waterspellen, proefjes en knutsels voor warme dagen.', aantal: 12 },
+  { titel: 'De natuur in',
+    samenvatting: 'Avontuurlijke buitenactiviteiten rond bos en tuin.', aantal: 9 },
+  { titel: 'Kunst & kleur',
+    samenvatting: 'Schilderen, bouwen en ontwerpen als echte kunstenaars.', aantal: 10 }
+];
+
+let AB_WORKSHOPS_OPSLAG = null;   // null = nog niets opgehaald
+let AB_THEMAS_OPSLAG    = null;
 
 function isInstelling(item) {
   return Boolean(item) && typeof item._instelling === 'string';
@@ -89,10 +119,30 @@ function isInstelling(item) {
 // geeft alleen de echte activiteiten terug.
 function scheidInstellingen(rauw) {
   if (!Array.isArray(rauw)) return [];
-  const vlag = rauw.find(i => isInstelling(i) && i._instelling === AB_INSTELLING_ONDERHOUD);
+
+  const regel = naam => rauw.find(i => isInstelling(i) && i._instelling === naam);
+
+  const vlag = regel(AB_INSTELLING_ONDERHOUD);
   AB_ONDERHOUD = Boolean(vlag && vlag.aan);
+
+  const workshops = regel(AB_INSTELLING_WORKSHOPS);
+  AB_WORKSHOPS_OPSLAG = workshops && Array.isArray(workshops.items) ? workshops.items : null;
+
+  const themas = regel(AB_INSTELLING_THEMAS);
+  AB_THEMAS_OPSLAG = themas && Array.isArray(themas.items) ? themas.items : null;
+
   return rauw.filter(i => !isInstelling(i));
 }
+
+// De opgeslagen lijst, of de standaardlijst zolang er nog niets is opgeslagen
+function workshopsLijst() {
+  return AB_WORKSHOPS_OPSLAG || AB_STANDAARD_WORKSHOPS.map(w => ({ ...w }));
+}
+function themasLijst() {
+  return AB_THEMAS_OPSLAG || AB_STANDAARD_THEMAS.map(t => ({ ...t }));
+}
+function zetWorkshops(items) { AB_WORKSHOPS_OPSLAG = items.map(w => ({ ...w })); }
+function zetThemas(items)    { AB_THEMAS_OPSLAG    = items.map(t => ({ ...t })); }
 
 // Staat de onderhoudsmodus aan volgens de laatst opgehaalde lijst?
 function onderhoudAan() {
@@ -126,8 +176,19 @@ async function laadActiviteiten() {
 // bewerking in het adminscherm de onderhoudsmodus ongemerkt uitzetten.
 function metInstellingen(lijst) {
   const schoon = lijst.filter(i => !isInstelling(i));
-  if (!AB_ONDERHOUD) return schoon;
-  return [{ _instelling: AB_INSTELLING_ONDERHOUD, aan: true }, ...schoon];
+  const regels = [];
+
+  if (AB_ONDERHOUD) {
+    regels.push({ _instelling: AB_INSTELLING_ONDERHOUD, aan: true });
+  }
+  if (AB_WORKSHOPS_OPSLAG) {
+    regels.push({ _instelling: AB_INSTELLING_WORKSHOPS, items: AB_WORKSHOPS_OPSLAG });
+  }
+  if (AB_THEMAS_OPSLAG) {
+    regels.push({ _instelling: AB_INSTELLING_THEMAS, items: AB_THEMAS_OPSLAG });
+  }
+
+  return [...regels, ...schoon];
 }
 
 // Slaat de volledige lijst op via de backend. Vereist een geldig Supabase
