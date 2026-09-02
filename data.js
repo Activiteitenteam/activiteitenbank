@@ -21,10 +21,27 @@ const AB_PRESET_LABELS = [
 ];
 
 // Emoji's waaruit in de editor gekozen kan worden (komt voor de titel te staan)
-const AB_EMOJIS = [
-  '🎨', '⚽', '🌳', '💻', '🍳', '🎲', '🎭', '🎵',
-  '🔬', '✂️', '🧩', '🏃', '🌈', '🐌', '📚', '🎉'
-];
+// Emoji's waaruit in de editor gekozen kan worden, gegroepeerd zodat je in
+// het adminscherm per soort kunt filteren. 'Algemeen' is de oorspronkelijke
+// lijst; die staat vooraan omdat bestaande activiteiten daaruit gekozen zijn.
+const AB_EMOJI_GROEPEN = {
+  Algemeen: ['🎨', '⚽', '🌳', '💻', '🍳', '🎲', '🎭', '🎵',
+             '🔬', '✂️', '🧩', '🏃', '🌈', '🐌', '📚', '🎉'],
+  Natuur:   ['🌻', '🍃', '🐞', '🦋', '🌷', '🐝',
+             '🌲', '🍄', '🐛', '🌱', '🦔', '🐦'],
+  Eten:     ['🍎', '🥕', '🍞', '🧁', '🍪', '🥞',
+             '🍓', '🥪', '🍇', '🧀', '🍕', '🥗'],
+  Sport:    ['🏀', '🤸', '🚴', '⛹️', '🥅', '🏐',
+             '🤾', '🛼', '🏓', '🥏', '🤺', '🏸'],
+  Muziek:   ['🥁', '🎸', '🎤', '🎺', '🎻', '🎹',
+             '🪗', '🪘', '🎧', '📻', '🔔', '🎶'],
+  Kunst:    ['🖌️', '🖍️', '🎪', '🧶', '🪡', '🖼️',
+             '🧵', '✏️', '📐', '🏺', '🎈', '🪄']
+};
+
+// Alle emoji's achter elkaar. Hierop wordt gecontroleerd of een gekozen of
+// aangeleverde emoji bestaat, dus de groepen blijven de enige bron.
+const AB_EMOJIS = Object.values(AB_EMOJI_GROEPEN).flat();
 
 // Wordt alleen gebruikt als de backend even niet bereikbaar is
 // (bijvoorbeeld tijdens het opstarten na een periode van inactiviteit).

@@ -64,15 +64,24 @@ def _waarde_uit_js(bron, naam, bestand):
     return treffer.group(1)
 
 
+def _emojis_uit_js(bron):
+    """De emoji's staan gegroepeerd in AB_EMOJI_GROEPEN; AB_EMOJIS wordt
+    daaruit berekend en staat dus niet meer als lijst in het bestand."""
+    treffer = re.search(r"const\s+AB_EMOJI_GROEPEN\s*=\s*\{(.*?)\n\};", bron, re.S)
+    if not treffer:
+        raise Fout("AB_EMOJI_GROEPEN niet gevonden in data.js.")
+    return re.findall(r"'([^']*)'", treffer.group(1))
+
+
 def instellingen():
     data_js = _lees("data.js")
-    admin = _lees("admin.html")
+    auth = _lees("admin-auth.js")
     labels = _lijst_uit_js(data_js, "AB_PRESET_LABELS", "data.js")
     return {
         "backend": _waarde_uit_js(data_js, "AB_BACKEND_URL", "data.js"),
-        "supabase_url": _waarde_uit_js(admin, "SUPABASE_URL", "admin.html"),
-        "supabase_key": _waarde_uit_js(admin, "SUPABASE_PUBLISHABLE_KEY", "admin.html"),
-        "emojis": _lijst_uit_js(data_js, "AB_EMOJIS", "data.js"),
+        "supabase_url": _waarde_uit_js(auth, "SUPABASE_URL", "admin-auth.js"),
+        "supabase_key": _waarde_uit_js(auth, "SUPABASE_PUBLISHABLE_KEY", "admin-auth.js"),
+        "emojis": _emojis_uit_js(data_js),
         # Leeftijdslabels zijn de labels met een cijfer erin; de rest is categorie.
         "categorieen": [l for l in labels if not re.search(r"\d", l)],
         "leeftijden": [l for l in labels if re.search(r"\d", l)],

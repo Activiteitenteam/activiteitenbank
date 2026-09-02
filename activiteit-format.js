@@ -133,3 +133,57 @@ function parseerActiviteitTekst(tekst) {
     }
   };
 }
+
+// Stelt de prompt samen waarmee je een activiteit door een AI in dit format
+// laat zetten. De lijsten komen uit data.js, zodat de prompt vanzelf klopt
+// als er een emoji of label bij komt.
+function bouwAiPrompt() {
+  const groepen = Object.entries(AB_EMOJI_GROEPEN)
+    .map(([naam, lijst]) => '  ' + naam + ': ' + lijst.join(' '))
+    .join('\n');
+
+  return [
+    'Je zet een activiteit om naar het vaste invoerformat van de Activiteitenbank.',
+    '',
+    'Geef ALLEEN het onderstaande blok terug. Geen inleiding, geen uitleg, geen',
+    'codehekjes eromheen.',
+    '',
+    '**Titel:** <korte titel, zonder emoji>',
+    '**Inleiding:** <hoe je de activiteit bij de kinderen introduceert>',
+    '**Kern:** <hoe de activiteit verloopt, stap voor stap>',
+    '**Slot:** <hoe je afsluit>',
+    '**Aangeleverd door:** <voornaam>',
+    '**Voorgestelde emoji:** <precies één emoji uit de lijst hieronder>',
+    "**Voorgestelde categorie:** <één of meer, gescheiden door komma's>",
+    "**Voorgestelde leeftijd:** <één of meer, gescheiden door komma's>",
+    '',
+    'Regels:',
+    '- Alle acht labels moeten aanwezig zijn, exact zo geschreven, inclusief de',
+    '  sterretjes en de dubbele punt.',
+    '- Geen enkel veld mag leeg blijven.',
+    '- Inleiding, Kern en Slot mogen over meerdere regels lopen.',
+    '',
+    'Emoji — kies er precies één uit; iets anders wordt geweigerd:',
+    groepen,
+    '',
+    'Categorie — uitsluitend deze waarden:',
+    '  ' + abCategorieLabels().join(', '),
+    '',
+    'Leeftijd — uitsluitend deze waarden:',
+    '  ' + abLeeftijdLabels().join(', '),
+    '',
+    'Twijfel je over categorie of leeftijd, kies dan de dichtstbijzijnde waarde',
+    'uit de lijst. Verzin er nooit een nieuwe bij.',
+    '',
+    'Let op bij het schrijven van de teksten:',
+    '- Gebruik nergens het patroon **woord:** in de lopende tekst. Dat wordt',
+    '  gelezen als een nieuw label en knipt je tekst doormidden.',
+    '- Sterretjes hebben betekenis op de site: *tekst* wordt vetgedrukt en',
+    '  **tekst** wordt cursief. Gebruik ze alleen als je dat bedoelt.',
+    '- Schrijf in het Nederlands, in de je-vorm, gericht op de pedagogisch',
+    '  medewerker die de activiteit gaat uitvoeren.',
+    '',
+    'De activiteit:',
+    '<plak hier je activiteit, aantekeningen of ruwe beschrijving>'
+  ].join('\n');
+}

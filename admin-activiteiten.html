@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Activiteiten beheren - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=12">
-<link rel="icon" href="Assets/favicon.svg?v=12" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=12" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=12">
+<link rel="stylesheet" href="style.css?v=13">
+<link rel="icon" href="Assets/favicon.svg?v=13" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=13" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=13">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -75,6 +75,7 @@
           <div class="plak-knoppen">
             <button type="button" class="knop knop-klein" id="plak-invullen">Velden invullen</button>
             <button type="button" class="knop knop-secundair knop-klein" id="plak-legen">Wissen</button>
+            <button type="button" class="knop knop-secundair knop-klein" id="plak-prompt">AI-prompt kopiëren</button>
           </div>
           <div class="plak-melding" id="plak-melding" hidden></div>
         </div>
@@ -89,6 +90,7 @@
             <span class="tip-tekst">Kies een emoji die voor de titel van de activiteit komt te staan.</span>
           </span>
         </label>
+        <div class="emoji-filters" id="emoji-filters" role="group" aria-label="Emoji's filteren op soort"></div>
         <div class="emoji-keuze" id="emoji-keuze" aria-labelledby="emoji-kop"></div>
       </div>
       <div class="veld-groep">
@@ -134,7 +136,7 @@
 <footer>
   <div class="footer-inner">
     <div class="endorser">
-      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=12"
+      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=13"
            alt="Vlietkinderen" width="640" height="87">
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl &middot; <a class="admin-link" href="admin.html">Admin login</a></p>
@@ -146,9 +148,9 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="admin-auth.js?v=12"></script>
-<script src="data.js?v=12"></script>
-<script src="activiteit-format.js?v=12"></script>
+<script src="admin-auth.js?v=13"></script>
+<script src="data.js?v=13"></script>
+<script src="activiteit-format.js?v=13"></script>
 <script>
   // Inloggen en het sessie-token komen uit admin-auth.js
   const dashboard = document.getElementById('dashboard');
@@ -197,10 +199,16 @@
   }
 
   // ── Emoji-keuze opbouwen (radio: één tegelijk, 'Geen' is de standaard) ──
+  // Het zijn er te veel voor één raster, dus je filtert op soort. 'Geen'
+  // blijft altijd staan, want dat is de standaardkeuze.
   const emojiKeuze = document.getElementById('emoji-keuze');
-  ['', ...AB_EMOJIS].forEach(emoji => {
+  const emojiFilters = document.getElementById('emoji-filters');
+  const EMOJI_ALLES = 'Alles';
+
+  function maakEmojiChip(emoji, groep) {
     const chip = document.createElement('label');
     chip.className = 'chip';
+    chip.dataset.groep = groep;
     const input = document.createElement('input');
     input.type = 'radio';
     input.name = 'emoji';
@@ -210,7 +218,38 @@
     span.textContent = emoji === '' ? 'Geen' : emoji;
     chip.append(input, span);
     emojiKeuze.append(chip);
+  }
+
+  maakEmojiChip('', EMOJI_ALLES);
+  Object.entries(AB_EMOJI_GROEPEN).forEach(([groep, emojis]) => {
+    emojis.forEach(e => maakEmojiChip(e, groep));
   });
+
+  function toonEmojiGroep(groep) {
+    emojiFilters.querySelectorAll('button').forEach(k => {
+      k.setAttribute('aria-pressed', String(k.dataset.groep === groep));
+    });
+    emojiKeuze.querySelectorAll('.chip').forEach(chip => {
+      const zichtbaar = groep === EMOJI_ALLES
+        || chip.dataset.groep === groep
+        || chip.dataset.groep === EMOJI_ALLES;   // 'Geen' blijft staan
+      chip.hidden = !zichtbaar;
+    });
+    emojiKeuze.scrollTop = 0;
+  }
+
+  [EMOJI_ALLES, ...Object.keys(AB_EMOJI_GROEPEN)].forEach(groep => {
+    const knop = document.createElement('button');
+    knop.type = 'button';
+    knop.className = 'emoji-filter';
+    knop.dataset.groep = groep;
+    knop.textContent = groep;
+    knop.setAttribute('aria-pressed', String(groep === EMOJI_ALLES));
+    knop.addEventListener('click', () => toonEmojiGroep(groep));
+    emojiFilters.append(knop);
+  });
+
+  toonEmojiGroep(EMOJI_ALLES);
 
   function gekozenEmoji() {
     const actief = emojiKeuze.querySelector('input:checked');
@@ -218,6 +257,13 @@
   }
   function zetEmoji(waarde) {
     emojiKeuze.querySelectorAll('input').forEach(i => { i.checked = (i.value === waarde); });
+    // Bij het bewerken kan de emoji in een groep zitten die nu weggefilterd
+    // is; dan zou je niet zien wat er gekozen staat.
+    const gekozen = emojiKeuze.querySelector('input:checked');
+    if (!gekozen) return;
+    const chip = gekozen.closest('.chip');
+    if (chip.hidden) toonEmojiGroep(EMOJI_ALLES);
+    if (waarde) chip.scrollIntoView({ block: 'nearest' });
   }
 
   koppelUitloggen();
@@ -458,6 +504,39 @@
     veldTitel.focus();
   });
 
+  // De prompt wordt opgebouwd uit de lijsten in data.js, dus hij blijft
+  // vanzelf kloppen als er een emoji of label bij komt.
+  const promptKnop = document.getElementById('plak-prompt');
+
+  // De moderne klembord-API weigert onder andere als het venster geen focus
+  // heeft. Daarom een terugval via een tijdelijk tekstvak; die werkt ook in
+  // oudere browsers en zonder toestemming vooraf.
+  async function kopieer(tekst) {
+    try {
+      await navigator.clipboard.writeText(tekst);
+      return true;
+    } catch (e) {
+      const vak = document.createElement('textarea');
+      vak.value = tekst;
+      vak.setAttribute('readonly', '');
+      vak.style.cssText = 'position:fixed;top:0;left:-9999px';
+      document.body.append(vak);
+      vak.select();
+      let gelukt = false;
+      try { gelukt = document.execCommand('copy'); } catch (e2) { gelukt = false; }
+      vak.remove();
+      return gelukt;
+    }
+  }
+
+  promptKnop.addEventListener('click', async () => {
+    const oorspronkelijk = 'AI-prompt kopiëren';
+    promptKnop.textContent = await kopieer(bouwAiPrompt())
+      ? 'Gekopieerd'
+      : 'Kopiëren lukte niet';
+    setTimeout(() => { promptKnop.textContent = oorspronkelijk; }, 1800);
+  });
+
   document.getElementById('plak-legen').addEventListener('click', () => {
     plakTekst.value = '';
     plakMelding.hidden = true;
@@ -472,7 +551,7 @@
     tekenLijst();
   })();
 </script>
-<script src="hero.js?v=12"></script>
-<script src="thema.js?v=12"></script>
+<script src="hero.js?v=13"></script>
+<script src="thema.js?v=13"></script>
 </body>
 </html>
