@@ -1,5 +1,9 @@
 [
   {
+    "_instelling": "onderhoud",
+    "aan": true
+  },
+  {
     "emoji": "🐌",
     "titel": "Slakken zoeken in de tuin",
     "beschrijving": "Natuuractiviteit voor buiten, met zoekkaart.",
