@@ -317,12 +317,16 @@ a.item:hover {
 .titel-prikbord .item { border-top-color: var(--oranje); }
 
 /* ── Detailpagina van een activiteit ── */
+/* De detailkaart blijft smal om prettig te lezen, maar staat gecentreerd op
+   de pagina. De terug-link krijgt dezelfde breedte, zodat hij netjes boven
+   de linkerrand van de kaart uitkomt in plaats van tegen de schermrand. */
 .terug-link {
-  display: inline-block;
+  display: block;
+  max-width: 760px;
+  margin: 0 auto 1.25rem;
   font-weight: 700;
   color: var(--blauw);
   text-decoration: none;
-  margin-bottom: 1.25rem;
 }
 .terug-link:hover { text-decoration: underline; }
 
@@ -333,6 +337,7 @@ a.item:hover {
   box-shadow: 0 3px 10px rgba(0,0,0,.07);
   border-top: 6px solid var(--groen);
   max-width: 760px;
+  margin-inline: auto;
 }
 .detail-kaart p { margin-bottom: .75rem; }
 .detail-kaart strong {
