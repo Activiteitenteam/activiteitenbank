@@ -31,9 +31,8 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 
-/* De html-achtergrond moet meekleuren: tijdens een paginawissel is body
-   even doorzichtig, en zonder dit zie je het witte browservenster erdoorheen.
-   Dat was de "flits" tussen twee pagina's. */
+/* De html-achtergrond moet meekleuren met het thema; anders zie je bij
+   overscrollen of tijdens het laden het witte browservenster. */
 html {
   background: var(--gebroken-wit);
   color-scheme: light;
@@ -46,29 +45,6 @@ body {
   background: var(--gebroken-wit);
   color: var(--tekst);
   line-height: 1.6;
-  animation: pagina-in .34s cubic-bezier(.22, .61, .36, 1);
-}
-
-/* ── Paginawissel: uitgaand zakt de pagina iets weg, inkomend komt hij
-   van onderen op. Beide met een zachte curve in plaats van een harde fade. ── */
-@keyframes pagina-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: none; }
-}
-body.pagina-uit {
-  opacity: 0;
-  transform: translateY(-6px);
-  transition: opacity .2s ease-in, transform .2s ease-in;
-}
-
-/* Wie bewegende interfaces vervelend vindt, krijgt alleen een korte fade */
-@media (prefers-reduced-motion: reduce) {
-  body { animation-duration: .12s; }
-  @keyframes pagina-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  body.pagina-uit { transform: none; transition: opacity .1s linear; }
 }
 
 /* ── Header & navigatie ── */
@@ -745,3 +721,197 @@ footer .admin-link:hover { opacity: 1; }
 .onderhoud-paneel.actief { border-left-color: var(--oranje); }
 .onderhoud-paneel h3 { font-size: 1.05rem; margin-bottom: .15rem; }
 .onderhoud-paneel p  { font-size: .9rem; color: var(--zacht); max-width: 46ch; }
+
+/* ── Filterbalk op de pagina met losse activiteiten ── */
+.filterbalk {
+  background: var(--oppervlak);
+  border-radius: 14px;
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .07);
+  border-top: 6px solid var(--groen);
+}
+.filter-kop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.filter-kop h2 { font-size: 1.1rem; }
+.filter-uitleg {
+  font-size: .88rem;
+  color: var(--zacht);
+  margin-top: .2rem;
+  max-width: 60ch;
+}
+.filter-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: 1rem;
+}
+.filter-label {
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 700;
+  padding: .35rem .9rem;
+  border-radius: 999px;
+  border: 2px solid var(--rand);
+  background: var(--oppervlak);
+  color: var(--zacht);
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s, opacity .15s;
+}
+.filter-label:hover:not(:disabled) { border-color: var(--groen); color: var(--donkergroen); }
+.filter-label[aria-pressed="true"] {
+  background: var(--groen);
+  border-color: var(--groen);
+  color: #fff;
+}
+/* Labels die in combinatie met de huidige keuze niets opleveren */
+.filter-label:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+.filter-label:focus-visible {
+  outline: 3px solid var(--blauw);
+  outline-offset: 2px;
+}
+.filter-telling {
+  font-size: .85rem;
+  color: var(--zachter);
+  margin-top: .9rem;
+}
+.geen-resultaat {
+  text-align: center;
+  color: var(--zacht);
+  padding: 2.5rem 1rem;
+}
+
+/* In de nachtmodus krijgt de balk dezelfde rand als de kaarten */
+:root[data-thema="donker"] .filterbalk {
+  box-shadow: 0 0 0 1px var(--rand), 0 3px 10px rgba(0, 0, 0, .35);
+}
+:root[data-thema="donker"] .filter-label:hover:not(:disabled) { color: var(--groen); }
+
+/* ── Workshop prikbord: briefjes als post-its ── */
+.prikbord {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 2.25rem 1.75rem;
+  padding: 2rem 1.5rem 2.5rem;
+  border-radius: 16px;
+  /* Zachte kurktextuur: twee lagen stippen over een warme ondergrond */
+  background-color: #c8a97e;
+  background-image:
+    radial-gradient(rgba(120, 85, 45, .22) 1px, transparent 1.6px),
+    radial-gradient(rgba(255, 255, 255, .18) 1px, transparent 1.6px);
+  background-size: 14px 14px, 22px 22px;
+  background-position: 0 0, 7px 11px;
+  box-shadow: inset 0 0 40px rgba(90, 60, 25, .3);
+}
+:root[data-thema="donker"] .prikbord {
+  background-color: #6d5334;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, .45);
+}
+
+.postit {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  padding: 2rem 1.15rem 1.1rem;
+  text-decoration: none;
+  /* Post-its blijven papierkleurig in beide thema's; daarom vaste kleuren
+     en niet de themavariabelen. */
+  color: #33302a;
+  background: #fdf1a9;
+  box-shadow: 2px 4px 10px rgba(60, 40, 15, .35);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+/* Lichte slordigheid: elk briefje hangt net even anders */
+.postit:nth-child(4n+1) { transform: rotate(-2deg);   background: #fdf1a9; }
+.postit:nth-child(4n+2) { transform: rotate(1.6deg);  background: #fbd3d8; }
+.postit:nth-child(4n+3) { transform: rotate(-1deg);   background: #d5eed8; }
+.postit:nth-child(4n+4) { transform: rotate(2.2deg);  background: #cfe4f5; }
+
+/* De punaise */
+.postit::before {
+  content: "";
+  position: absolute;
+  top: .6rem;
+  left: 50%;
+  width: 15px;
+  height: 15px;
+  margin-left: -7.5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 32%, #ff8a7a, var(--roze) 60%, #9c2a3e);
+  box-shadow: 0 2px 4px rgba(60, 40, 15, .45);
+}
+
+.postit:hover,
+.postit:focus-visible {
+  transform: rotate(0deg) translateY(-4px) scale(1.02);
+  box-shadow: 4px 8px 18px rgba(60, 40, 15, .45);
+  z-index: 1;
+}
+.postit:focus-visible { outline: 3px solid var(--blauw); outline-offset: 3px; }
+
+.postit h3 {
+  font-size: 1.05rem;
+  margin-bottom: .4rem;
+  color: inherit;
+}
+.postit p {
+  font-size: .9rem;
+  color: inherit;
+  opacity: .85;
+}
+.postit-door {
+  display: block;
+  margin-top: auto;
+  padding-top: .8rem;
+  font-size: .78rem;
+  font-style: italic;
+  opacity: .75;
+}
+.postit-meer {
+  display: block;
+  margin-top: .3rem;
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+/* ── Detailpagina van een workshop ── */
+.detail-kaart.detail-prikbord { border-top-color: var(--oranje); }
+.workshop-gegevens {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .35rem 1.25rem;
+  margin: 1.4rem 0;
+  font-size: .95rem;
+}
+.workshop-gegevens dt { font-weight: 700; color: var(--zacht); }
+.volgt-nog {
+  background: var(--gebroken-wit);
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  font-size: .92rem;
+  color: var(--zacht);
+}
+:root[data-thema="donker"] .volgt-nog { box-shadow: inset 0 0 0 1px var(--rand); }
+
+/* ── Themapagina die nog gemaakt moet worden ── */
+.detail-kaart.detail-thema { border-top-color: var(--paars); }
+.komt-nog { text-align: center; padding: 1.5rem .5rem; }
+.komt-nog-emoji {
+  display: block;
+  font-size: 2.75rem;
+  line-height: 1;
+  margin-bottom: .75rem;
+}
+.komt-nog h2 { color: var(--paars); margin-bottom: .6rem; }
+.komt-nog p { color: var(--zacht); max-width: 52ch; margin: 0 auto .6rem; }
+.komt-nog-tip { font-size: .92rem; }
+.komt-nog-tip a { color: var(--blauw); }

@@ -44,16 +44,25 @@
 </div>
 
 <section class="blok titel-losse">
+  <div class="filterbalk" id="filterbalk" hidden>
+    <div class="filter-kop">
+      <h2>Filteren op label</h2>
+      <button type="button" class="knop knop-secundair knop-klein" id="filter-wissen" hidden>Alles wissen</button>
+    </div>
+    <p class="filter-uitleg">Kies er meerdere om preciezer te zoeken; een activiteit moet dan alle gekozen labels hebben.</p>
+    <div class="filter-labels" id="filter-labels"></div>
+    <p class="filter-telling" id="filter-telling" aria-live="polite"></p>
+  </div>
+
   <div class="items" id="activiteiten-lijst"></div>
+
+  <p class="geen-resultaat" id="geen-resultaat" hidden>
+    Geen activiteiten met deze combinatie van labels. Zet er een uit om meer te zien.
+  </p>
 </section>
 
 <script src="data.js"></script>
-<script>
-  const lijst = document.getElementById('activiteiten-lijst');
-  laadActiviteiten().then(activiteiten => {
-    activiteiten.forEach((a, i) => lijst.append(maakActiviteitKaart(a, i)));
-  });
-</script>
+<script src="losse-filter.js"></script>
 
 <footer>
   <div class="footer-inner">
@@ -73,7 +82,6 @@
 </footer>
 
 <script src="hero.js"></script>
-<script src="fade.js"></script>
 <script src="thema.js"></script>
 </body>
 </html>

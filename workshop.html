@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Activiteitenbank.nl</title>
+<title>Workshop - Activiteitenbank.nl</title>
 <link rel="stylesheet" href="style.css">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
@@ -26,40 +26,33 @@
       <ul>
         <li><a class="nav-losse" href="losse-activiteiten.html">Losse activiteiten</a></li>
         <li><a class="nav-thema" href="thema-paginas.html">Thema pagina's</a></li>
-        <li><a class="nav-prikbord" href="workshop-prikbord.html">Workshop prikbord</a></li>
+        <li><a class="nav-prikbord actief" href="workshop-prikbord.html">Workshop prikbord</a></li>
       </ul>
     </nav>
   </div>
 </header>
 
-<div class="hero">
+<div class="hero hero-sub hero-prikbord">
   <div class="hero-slide actief" style="background-image: url('Assets/Banner/ben-wicks-iDCtsz-INHI-unsplash.jpg')"></div>
   <div class="hero-slide" style="background-image: url('Assets/Banner/ashton-bingham-SAHBl2UpXco-unsplash.jpg')"></div>
   <div class="hero-slide" style="background-image: url('Assets/Banner/compagnons-OV44gxH71DU-unsplash.jpg')"></div>
   <div class="hero-overlay"></div>
   <div class="hero-inhoud">
-    <h1>Welkom bij de Activiteitenbank</h1>
-    <p>Inspiratie en kant-en-klare activiteiten voor op de groep. Zoek, kies en ga aan de slag!</p>
+    <h1 id="workshop-titel">Workshop</h1>
   </div>
 </div>
 
-<div class="kaarten">
-  <a class="kaart kaart-losse" href="losse-activiteiten.html">
-    <h2>Losse activiteiten</h2>
-    <p>Snel een activiteit nodig? Blader door losse activiteiten voor binnen en buiten.</p>
-    <span class="pijl">Bekijk activiteiten &rarr;</span>
-  </a>
-  <a class="kaart kaart-thema" href="thema-paginas.html">
-    <h2>Thema pagina's</h2>
-    <p>Complete thema's met activiteiten, knutsels en spellen die bij elkaar horen.</p>
-    <span class="pijl">Bekijk thema's &rarr;</span>
-  </a>
-  <a class="kaart kaart-prikbord" href="workshop-prikbord.html">
-    <h2>Workshop prikbord</h2>
-    <p>Workshops van en voor collega's. Bied zelf een workshop aan of doe mee.</p>
-    <span class="pijl">Naar het prikbord &rarr;</span>
-  </a>
-</div>
+<section class="blok titel-prikbord">
+  <a class="terug-link" href="workshop-prikbord.html">&larr; Terug naar het prikbord</a>
+  <div class="detail-kaart detail-prikbord" id="workshop-kaart">
+    <p id="workshop-tekst"></p>
+    <dl class="workshop-gegevens" id="workshop-gegevens"></dl>
+    <p class="volgt-nog" id="workshop-volgt">
+      📌 De volledige beschrijving van deze workshop komt nog. Wil je hem nu al inplannen,
+      neem dan contact op met de collega die hem aanbiedt.
+    </p>
+  </div>
+</section>
 
 <footer>
   <div class="footer-inner">
@@ -78,6 +71,33 @@
   </div>
 </footer>
 
+<script src="workshops.js"></script>
+<script>
+  const nr = Number(new URLSearchParams(location.search).get('nr'));
+  const workshop = AB_WORKSHOPS[nr];
+
+  if (!workshop) {
+    document.getElementById('workshop-titel').textContent = 'Workshop niet gevonden';
+    document.getElementById('workshop-tekst').textContent =
+      'Deze workshop bestaat niet (meer). Ga terug naar het prikbord.';
+    document.getElementById('workshop-gegevens').hidden = true;
+    document.getElementById('workshop-volgt').hidden = true;
+  } else {
+    document.title = workshop.titel + ' - Activiteitenbank.nl';
+    document.getElementById('workshop-titel').textContent = workshop.titel;
+    document.getElementById('workshop-tekst').textContent = workshop.samenvatting;
+
+    const gegevens = document.getElementById('workshop-gegevens');
+    [['Aangeboden door', workshop.door], ['Duur', workshop.duur]].forEach(([kop, waarde]) => {
+      if (!waarde) return;
+      const dt = document.createElement('dt');
+      dt.textContent = kop;
+      const dd = document.createElement('dd');
+      dd.textContent = waarde;
+      gegevens.append(dt, dd);
+    });
+  }
+</script>
 <script src="hero.js"></script>
 <script src="thema.js"></script>
 </body>

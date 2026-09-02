@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Activiteitenbank.nl</title>
+<title>Thema - Activiteitenbank.nl</title>
 <link rel="stylesheet" href="style.css">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
@@ -25,41 +25,41 @@
     <nav aria-label="Hoofdmenu">
       <ul>
         <li><a class="nav-losse" href="losse-activiteiten.html">Losse activiteiten</a></li>
-        <li><a class="nav-thema" href="thema-paginas.html">Thema pagina's</a></li>
+        <li><a class="nav-thema actief" href="thema-paginas.html">Thema pagina's</a></li>
         <li><a class="nav-prikbord" href="workshop-prikbord.html">Workshop prikbord</a></li>
       </ul>
     </nav>
   </div>
 </header>
 
-<div class="hero">
+<div class="hero hero-sub hero-thema">
   <div class="hero-slide actief" style="background-image: url('Assets/Banner/ben-wicks-iDCtsz-INHI-unsplash.jpg')"></div>
   <div class="hero-slide" style="background-image: url('Assets/Banner/ashton-bingham-SAHBl2UpXco-unsplash.jpg')"></div>
   <div class="hero-slide" style="background-image: url('Assets/Banner/compagnons-OV44gxH71DU-unsplash.jpg')"></div>
   <div class="hero-overlay"></div>
   <div class="hero-inhoud">
-    <h1>Welkom bij de Activiteitenbank</h1>
-    <p>Inspiratie en kant-en-klare activiteiten voor op de groep. Zoek, kies en ga aan de slag!</p>
+    <h1 id="thema-titel">Thema</h1>
+    <p id="thema-tekst"></p>
   </div>
 </div>
 
-<div class="kaarten">
-  <a class="kaart kaart-losse" href="losse-activiteiten.html">
-    <h2>Losse activiteiten</h2>
-    <p>Snel een activiteit nodig? Blader door losse activiteiten voor binnen en buiten.</p>
-    <span class="pijl">Bekijk activiteiten &rarr;</span>
-  </a>
-  <a class="kaart kaart-thema" href="thema-paginas.html">
-    <h2>Thema pagina's</h2>
-    <p>Complete thema's met activiteiten, knutsels en spellen die bij elkaar horen.</p>
-    <span class="pijl">Bekijk thema's &rarr;</span>
-  </a>
-  <a class="kaart kaart-prikbord" href="workshop-prikbord.html">
-    <h2>Workshop prikbord</h2>
-    <p>Workshops van en voor collega's. Bied zelf een workshop aan of doe mee.</p>
-    <span class="pijl">Naar het prikbord &rarr;</span>
-  </a>
-</div>
+<section class="blok titel-thema">
+  <a class="terug-link" href="thema-paginas.html">&larr; Terug naar de thema pagina's</a>
+  <div class="detail-kaart detail-thema" id="thema-kaart">
+    <div class="komt-nog" id="thema-komt-nog">
+      <span class="komt-nog-emoji" role="img" aria-label="In aanbouw">🚧</span>
+      <h2>Deze themapagina komt nog</h2>
+      <p>
+        Het Activiteitenteam is dit thema aan het uitwerken. Zodra de activiteiten,
+        knutsels en spellen klaarstaan, verschijnen ze hier.
+      </p>
+      <p class="komt-nog-tip">
+        Tot die tijd vind je losse activiteiten via
+        <a href="losse-activiteiten.html">Losse activiteiten</a>, waar je op label kunt filteren.
+      </p>
+    </div>
+  </div>
+</section>
 
 <footer>
   <div class="footer-inner">
@@ -78,6 +78,21 @@
   </div>
 </footer>
 
+<script src="themas.js"></script>
+<script>
+  const nr = Number(new URLSearchParams(location.search).get('nr'));
+  const gekozenThema = AB_THEMAS[nr];
+
+  if (!gekozenThema) {
+    document.getElementById('thema-titel').textContent = 'Thema niet gevonden';
+    document.getElementById('thema-kaart').innerHTML =
+      '<p>Dit thema bestaat niet (meer). Ga terug naar het overzicht.</p>';
+  } else {
+    document.title = gekozenThema.titel + ' - Activiteitenbank.nl';
+    document.getElementById('thema-titel').textContent = gekozenThema.titel;
+    document.getElementById('thema-tekst').textContent = gekozenThema.samenvatting;
+  }
+</script>
 <script src="hero.js"></script>
 <script src="thema.js"></script>
 </body>
