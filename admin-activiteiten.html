@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activiteiten beheren - Activiteitenbank.nl</title>
+<link rel="stylesheet" href="style.css?v=7">
+<link rel="icon" href="Assets/favicon.svg?v=7" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=7" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=7">
+<script>
+  // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
+  // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
+  try {
+    var bewaardThema = localStorage.getItem('activiteitenbank-thema');
+    if (bewaardThema === 'donker') document.documentElement.dataset.thema = 'donker';
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="index.html">
+      <span>Acti</span><span>vi</span><span>tei</span><span>ten</span><span>ba</span><span>nk</span><span class="nl">.nl</span>
+    </a>
+    <nav aria-label="Hoofdmenu">
+      <ul>
+        <li><a class="nav-losse" href="losse-activiteiten.html">Losse activiteiten</a></li>
+        <li><a class="nav-thema" href="thema-paginas.html">Thema pagina's</a></li>
+        <li><a class="nav-prikbord" href="workshop-prikbord.html">Workshop prikbord</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+
+<!-- Dashboard -->
+<section class="werkblad" id="dashboard" hidden>
+  <div class="werkbalk">
+    <div class="werkbalk-kop">
+      <h2><a class="terug-naar-admin" href="admin.html">Admin</a> &rsaquo; Activiteiten</h2>
+      <span class="werkbalk-telling" id="beheer-telling"></span>
+    </div>
+    <div class="werkbalk-acties">
+      <input type="search" class="werkbalk-zoek" id="beheer-zoek"
+             placeholder="Zoeken op titel, label of naam" aria-label="Zoeken in activiteiten">
+      <button type="button" class="knop knop-klein" id="toevoeg-tegel">+ Activiteit</button>
+      <button type="button" class="knop knop-secundair knop-klein" id="herstel-knop">Vernieuwen</button>
+      <button type="button" class="knop knop-secundair knop-klein" id="uitloggen">Uitloggen</button>
+    </div>
+  </div>
+
+  <div class="werkblad-kolommen">
+    <div class="werkblad-lijst">
+      <div id="beheer-lijst"></div>
+      <p class="werkblad-leeg" id="beheer-geen" hidden>Geen activiteiten gevonden.</p>
+    </div>
+
+    <div class="werkblad-editor">
+
+      <div class="plak-paneel">
+        <button type="button" class="plak-kop" id="plak-kop" aria-expanded="false" aria-controls="plak-inhoud">
+          <span>Plakken uit het vaste format</span>
+          <span class="plak-pijl" aria-hidden="true">▾</span>
+        </button>
+        <div class="plak-inhoud" id="plak-inhoud" hidden>
+          <p class="plak-uitleg">
+            Plak de aangeleverde tekst met <code>**Titel:**</code>, <code>**Inleiding:**</code>,
+            <code>**Kern:**</code> enzovoort. De velden hieronder worden ingevuld; opslaan doe je daarna zelf.
+          </p>
+          <textarea id="plak-tekst" rows="8" spellcheck="false"
+                    placeholder="**Titel:** Zoutdeeg figuren&#10;**Inleiding:** ...&#10;**Kern:** ...&#10;**Slot:** ...&#10;**Aangeleverd door:** Nadia&#10;**Voorgestelde emoji:** 🎨&#10;**Voorgestelde categorie:** Creatief&#10;**Voorgestelde leeftijd:** 4-7 jaar"></textarea>
+          <div class="plak-knoppen">
+            <button type="button" class="knop knop-klein" id="plak-invullen">Velden invullen</button>
+            <button type="button" class="knop knop-secundair knop-klein" id="plak-legen">Wissen</button>
+          </div>
+          <div class="plak-melding" id="plak-melding" hidden></div>
+        </div>
+      </div>
+
+  <div class="beheer-paneel" id="beheer-paneel" hidden>
+    <h3 id="form-titel">Nieuwe activiteit</h3>
+    <form class="formulier" id="activiteit-form">
+      <div class="veld-groep">
+        <label id="emoji-kop">Emoji
+          <span class="info-tip" tabindex="0" aria-label="Uitleg over emoji">i
+            <span class="tip-tekst">Kies een emoji die voor de titel van de activiteit komt te staan.</span>
+          </span>
+        </label>
+        <div class="emoji-keuze" id="emoji-keuze" aria-labelledby="emoji-kop"></div>
+      </div>
+      <div class="veld-groep">
+        <label for="veld-titel">Titel</label>
+        <input type="text" id="veld-titel" placeholder="Bijv. Zoutdeeg figuren" required>
+      </div>
+      <div class="veld-groep">
+        <label for="veld-beschrijving">Korte beschrijving
+          <span class="info-tip" tabindex="0" aria-label="Uitleg over opmaak">i
+            <span class="tip-tekst">
+              Opmaak in de tekst:<br>
+              *tekst* &rarr; <strong>vetgedrukt</strong> (alineakopje)<br>
+              **tekst** &rarr; <em>cursief</em> (in de tekst)
+            </span>
+          </span>
+        </label>
+        <textarea id="veld-beschrijving" placeholder="Wat gaan de kinderen doen?"></textarea>
+      </div>
+      <div class="veld-groep">
+        <label for="veld-door">Aangeleverd door</label>
+        <input type="text" id="veld-door" placeholder="Wie heeft deze activiteit bedacht?">
+      </div>
+      <div class="veld-groep">
+        <label id="labels-kop">Labels</label>
+        <div class="label-keuze" id="label-keuze" aria-labelledby="labels-kop"></div>
+      </div>
+      <div class="form-knoppen">
+        <button type="button" class="knop knop-secundair" id="annuleer-knop">Annuleren</button>
+        <button type="submit" class="knop" id="opslaan-knop">Toevoegen</button>
+      </div>
+    </form>
+  </div>
+
+      <p class="editor-leeg" id="editor-leeg">
+        Kies links een activiteit om te bewerken, of maak er een nieuwe met
+        <strong>+ Activiteit</strong>.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="endorser">
+      <span class="v">V</span>
+      <span class="tekst">
+        <small>In samenwerking met</small>
+        <strong>Vlietkinderen</strong>
+      </span>
+    </div>
+    <p class="copy">&copy; 2026 Activiteitenbank.nl &middot; <a class="admin-link" href="admin.html">Admin login</a></p>
+    <button type="button" class="thema-schakelaar" id="thema-schakelaar" aria-pressed="false">
+      <span class="thema-spoor" aria-hidden="true"><span class="thema-knop"></span></span>
+      <span class="thema-label">Nachtmodus</span>
+    </button>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="admin-auth.js?v=7"></script>
+<script src="data.js?v=7"></script>
+<script src="activiteit-format.js?v=7"></script>
+<script>
+  // Inloggen en het sessie-token komen uit admin-auth.js
+  const dashboard = document.getElementById('dashboard');
+  const beheerLijst = document.getElementById('beheer-lijst');
+  const beheerPaneel = document.getElementById('beheer-paneel');
+  const toevoegTegel = document.getElementById('toevoeg-tegel');
+  const zoekVeld = document.getElementById('beheer-zoek');
+  const beheerTelling = document.getElementById('beheer-telling');
+  const beheerGeen = document.getElementById('beheer-geen');
+  const editorLeeg = document.getElementById('editor-leeg');
+  const formTitel = document.getElementById('form-titel');
+  const veldTitel = document.getElementById('veld-titel');
+  const veldBeschrijving = document.getElementById('veld-beschrijving');
+  const veldDoor = document.getElementById('veld-door');
+  const labelKeuze = document.getElementById('label-keuze');
+  const opslaanKnop = document.getElementById('opslaan-knop');
+  const annuleerKnop = document.getElementById('annuleer-knop');
+
+  let activiteiten = [];
+  let bewerkIndex = null; // null = nieuwe toevoegen, anders index die bewerkt wordt
+
+  // Haalt het huidige Supabase sessie-token op, nodig bij elke opslag-actie.
+  async function huidigToken() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    return session ? session.access_token : null;
+  }
+
+  // ── Labelkeuze opbouwen uit de presets ──
+  AB_PRESET_LABELS.forEach(naam => {
+    const chip = document.createElement('label');
+    chip.className = 'chip';
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.value = naam;
+    const span = document.createElement('span');
+    span.textContent = naam;
+    chip.append(input, span);
+    labelKeuze.append(chip);
+  });
+
+  function gekozenLabels() {
+    return [...labelKeuze.querySelectorAll('input:checked')].map(i => i.value);
+  }
+  function zetLabels(labels) {
+    labelKeuze.querySelectorAll('input').forEach(i => { i.checked = labels.includes(i.value); });
+  }
+
+  // ── Emoji-keuze opbouwen (radio: één tegelijk, 'Geen' is de standaard) ──
+  const emojiKeuze = document.getElementById('emoji-keuze');
+  ['', ...AB_EMOJIS].forEach(emoji => {
+    const chip = document.createElement('label');
+    chip.className = 'chip';
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = 'emoji';
+    input.value = emoji;
+    if (emoji === '') input.checked = true;
+    const span = document.createElement('span');
+    span.textContent = emoji === '' ? 'Geen' : emoji;
+    chip.append(input, span);
+    emojiKeuze.append(chip);
+  });
+
+  function gekozenEmoji() {
+    const actief = emojiKeuze.querySelector('input:checked');
+    return actief ? actief.value : '';
+  }
+  function zetEmoji(waarde) {
+    emojiKeuze.querySelectorAll('input').forEach(i => { i.checked = (i.value === waarde); });
+  }
+
+  koppelUitloggen();
+
+  // ── Lijst tekenen ──
+  // Alles waar de zoekbalk op mag matchen
+  function zoekbareTekst(a) {
+    return [a.titel, a.beschrijving, a.aangeleverdDoor, ...labelsVan(a)]
+      .filter(Boolean).join(' ').toLowerCase();
+  }
+
+  // Zet de nadruk op de rij die op dit moment in de editor staat
+  function markeerSelectie() {
+    beheerLijst.querySelectorAll('.beheer-rij').forEach(rij => {
+      const gekozen = bewerkIndex !== null && Number(rij.dataset.nr) === bewerkIndex;
+      rij.classList.toggle('gekozen', gekozen);
+    });
+  }
+
+  function tekenLijst() {
+    beheerLijst.innerHTML = '';
+
+    // De zoekbalk verbergt rijen, maar bewerken en verwijderen werken op het
+    // volgnummer in de volledige lijst. Dat nummer reist dus mee; zonder dat
+    // zou je bij een actieve zoekterm de verkeerde activiteit te pakken hebben.
+    const zoek = zoekVeld.value.trim().toLowerCase();
+    const paren = activiteiten
+      .map((activiteit, nr) => ({ activiteit, nr }))
+      .filter(({ activiteit }) => !zoek || zoekbareTekst(activiteit).includes(zoek));
+
+    beheerTelling.textContent = zoek
+      ? paren.length + ' van ' + activiteiten.length
+      : activiteiten.length + (activiteiten.length === 1 ? ' activiteit' : ' activiteiten');
+    beheerGeen.hidden = paren.length > 0;
+
+    paren.forEach(({ activiteit: a, nr: i }) => {
+      const rij = document.createElement('div');
+      rij.className = 'beheer-rij';
+      rij.dataset.nr = String(i);
+
+      const info = document.createElement('div');
+      info.className = 'info';
+      const titel = document.createElement('h4');
+      titel.textContent = (a.emoji ? a.emoji + ' ' : '') + a.titel;
+      const beschrijving = document.createElement('p');
+      beschrijving.innerHTML = formatteerBeschrijving(a.beschrijving);
+      info.append(titel, beschrijving);
+      if (a.aangeleverdDoor) {
+        const door = document.createElement('p');
+        door.className = 'door';
+        door.textContent = 'Aangeleverd door ' + a.aangeleverdDoor;
+        info.append(door);
+      }
+      labelsVan(a).forEach(naam => {
+        const label = document.createElement('span');
+        label.className = 'label';
+        label.textContent = naam;
+        info.append(label);
+      });
+
+      const acties = document.createElement('div');
+      acties.className = 'acties';
+      const bewerk = document.createElement('button');
+      bewerk.className = 'knop knop-klein';
+      bewerk.textContent = 'Bewerken';
+      bewerk.addEventListener('click', () => startBewerken(i));
+      const verwijder = document.createElement('button');
+      verwijder.className = 'knop knop-gevaar knop-klein';
+      verwijder.textContent = 'Verwijderen';
+      verwijder.addEventListener('click', async () => {
+        if (confirm('"' + a.titel + '" verwijderen?')) {
+          const kopie = activiteiten.slice();
+          kopie.splice(i, 1);
+          const token = await huidigToken();
+          const gelukt = token && await bewaarActiviteiten(kopie, token);
+          if (gelukt) {
+            activiteiten = kopie;
+            stopBewerken();
+            tekenLijst();
+          } else {
+            alert('Verwijderen is niet gelukt. Probeer het opnieuw of log opnieuw in.');
+          }
+        }
+      });
+      acties.append(bewerk, verwijder);
+
+      // Klikken op de rij zelf opent hem ook; klikken op de knoppen niet
+      // dubbel afhandelen.
+      rij.addEventListener('click', (e) => {
+        if (e.target.closest('.acties')) return;
+        startBewerken(i);
+      });
+
+      rij.append(info, acties);
+      beheerLijst.append(rij);
+    });
+
+    markeerSelectie();
+  }
+
+  zoekVeld.addEventListener('input', tekenLijst);
+
+  // ── Toevoegen / bewerken ──
+  // De tegel opent het (lege) formulier voor een nieuwe activiteit
+  toevoegTegel.addEventListener('click', () => {
+    stopBewerken();
+    openFormulier();
+    veldTitel.focus();
+  });
+
+  function openFormulier() {
+    beheerPaneel.hidden = false;
+    editorLeeg.hidden = true;
+  }
+
+  function startBewerken(i) {
+    bewerkIndex = i;
+    veldTitel.value = activiteiten[i].titel;
+    veldBeschrijving.value = activiteiten[i].beschrijving;
+    veldDoor.value = activiteiten[i].aangeleverdDoor || '';
+    zetEmoji(activiteiten[i].emoji || '');
+    zetLabels(labelsVan(activiteiten[i]));
+    formTitel.textContent = 'Activiteit bewerken';
+    opslaanKnop.textContent = 'Opslaan';
+    openFormulier();
+    markeerSelectie();
+    veldTitel.focus();
+  }
+
+  function stopBewerken() {
+    bewerkIndex = null;
+    veldTitel.value = '';
+    veldBeschrijving.value = '';
+    veldDoor.value = '';
+    zetEmoji('');
+    zetLabels([]);
+    formTitel.textContent = 'Nieuwe activiteit';
+    opslaanKnop.textContent = 'Toevoegen';
+    beheerPaneel.hidden = true;
+    editorLeeg.hidden = false;
+    markeerSelectie();
+  }
+
+  annuleerKnop.addEventListener('click', stopBewerken);
+
+  document.getElementById('activiteit-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const activiteit = {
+      emoji: gekozenEmoji(),
+      titel: veldTitel.value.trim(),
+      beschrijving: veldBeschrijving.value.trim(),
+      aangeleverdDoor: veldDoor.value.trim(),
+      labels: gekozenLabels()
+    };
+    if (!activiteit.titel) return;
+    const kopie = activiteiten.slice();
+    if (bewerkIndex === null) {
+      kopie.push(activiteit);
+    } else {
+      kopie[bewerkIndex] = activiteit;
+    }
+    opslaanKnop.disabled = true;
+    const token = await huidigToken();
+    const gelukt = token && await bewaarActiviteiten(kopie, token);
+    opslaanKnop.disabled = false;
+    if (gelukt) {
+      activiteiten = kopie;
+      stopBewerken();
+      tekenLijst();
+    } else {
+      alert('Opslaan is niet gelukt. Probeer het opnieuw of log opnieuw in.');
+    }
+  });
+
+  // ── Vernieuwen (haalt de actuele lijst opnieuw op bij de backend) ──
+  document.getElementById('herstel-knop').addEventListener('click', async () => {
+    activiteiten = await laadActiviteiten();
+    stopBewerken();
+    tekenLijst();
+  });
+
+  // ── Plakken uit het vaste format ──
+  const plakKop      = document.getElementById('plak-kop');
+  const plakInhoud   = document.getElementById('plak-inhoud');
+  const plakTekst    = document.getElementById('plak-tekst');
+  const plakMelding  = document.getElementById('plak-melding');
+
+  plakKop.addEventListener('click', () => {
+    const open = plakInhoud.hidden;
+    plakInhoud.hidden = !open;
+    plakKop.setAttribute('aria-expanded', String(open));
+    if (open) plakTekst.focus();
+  });
+
+  function toonPlakMelding(soort, kop, regels) {
+    plakMelding.className = 'plak-melding ' + soort;
+    plakMelding.innerHTML = '';
+    const titel = document.createElement('strong');
+    titel.textContent = kop;
+    plakMelding.append(titel);
+    if (regels && regels.length) {
+      const lijst = document.createElement('ul');
+      regels.forEach(r => {
+        const li = document.createElement('li');
+        li.textContent = r;
+        lijst.append(li);
+      });
+      plakMelding.append(lijst);
+    }
+    plakMelding.hidden = false;
+  }
+
+  document.getElementById('plak-invullen').addEventListener('click', () => {
+    const tekst = plakTekst.value.trim();
+    if (!tekst) {
+      toonPlakMelding('fout', 'Er staat nog geen tekst in het vak.', []);
+      return;
+    }
+
+    const uitslag = parseerActiviteitTekst(tekst);
+    if (!uitslag.gelukt) {
+      toonPlakMelding('fout', 'De tekst kon niet verwerkt worden:', uitslag.fouten);
+      return;
+    }
+
+    // Als een nieuwe activiteit invullen, niet als bewerking van een bestaande
+    stopBewerken();
+    const a = uitslag.activiteit;
+    veldTitel.value = a.titel;
+    veldBeschrijving.value = a.beschrijving;
+    veldDoor.value = a.aangeleverdDoor;
+    zetEmoji(a.emoji);
+    zetLabels(a.labels);
+    openFormulier();
+
+    toonPlakMelding('gelukt', 'Velden ingevuld. Controleer ze en klik daarna op Toevoegen.',
+      [a.emoji + ' ' + a.titel, 'Labels: ' + a.labels.join(', ')]);
+    veldTitel.focus();
+  });
+
+  document.getElementById('plak-legen').addEventListener('click', () => {
+    plakTekst.value = '';
+    plakMelding.hidden = true;
+    plakTekst.focus();
+  });
+
+  // Zonder sessie hoor je hier niet: dan terug naar het inlogscherm.
+  (async () => {
+    if (!await vereisLogin()) return;
+    dashboard.hidden = false;
+    activiteiten = await laadActiviteiten();
+    tekenLijst();
+  })();
+</script>
+<script src="hero.js?v=7"></script>
+<script src="thema.js?v=7"></script>
+</body>
+</html>

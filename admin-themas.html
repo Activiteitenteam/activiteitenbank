@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thema's beheren - Activiteitenbank.nl</title>
+<link rel="stylesheet" href="style.css?v=7">
+<link rel="icon" href="Assets/favicon.svg?v=7" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=7" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=7">
+<script>
+  // Thema toepassen voor het tekenen, anders flitst de lichte versie door.
+  try {
+    var bewaardThema = localStorage.getItem('activiteitenbank-thema');
+    if (bewaardThema === 'donker') document.documentElement.dataset.thema = 'donker';
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="index.html">
+      <span>Acti</span><span>vi</span><span>tei</span><span>ten</span><span>ba</span><span>nk</span><span class="nl">.nl</span>
+    </a>
+    <nav aria-label="Hoofdmenu">
+      <ul>
+        <li><a class="nav-losse" href="losse-activiteiten.html">Losse activiteiten</a></li>
+        <li><a class="nav-thema" href="thema-paginas.html">Thema pagina's</a></li>
+        <li><a class="nav-prikbord" href="workshop-prikbord.html">Workshop prikbord</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section class="werkblad" id="werkblad" hidden>
+  <div class="werkbalk">
+    <div class="werkbalk-kop">
+      <h2><a class="terug-naar-admin" href="admin.html">Admin</a> &rsaquo; Thema's</h2>
+      <span class="werkbalk-telling" id="th-telling"></span>
+    </div>
+    <div class="werkbalk-acties">
+      <button type="button" class="knop knop-secundair knop-klein uitloggen-knop">Uitloggen</button>
+    </div>
+  </div>
+
+  <div class="werkblad-kolommen">
+    <div class="werkblad-lijst">
+      <div class="extra-lijst" id="th-lijst"></div>
+    </div>
+
+    <div class="werkblad-editor">
+      <div class="beheer-paneel">
+        <form class="formulier" id="th-form">
+          <h3 id="th-formtitel">Nieuw item</h3>
+          <div class="veld-groep">
+            <label for="th-titel">Titel</label>
+            <input type="text" id="th-titel" placeholder="Bijv. Zomer &amp; water" required>
+          </div>
+          <div class="veld-groep">
+            <label for="th-tekst">Korte omschrijving</label>
+            <input type="text" id="th-tekst" placeholder="Waar gaat het thema over?">
+          </div>
+          <div class="veld-groep">
+            <label for="th-aantal">Aantal activiteiten</label>
+            <input type="text" id="th-aantal" placeholder="Laat leeg als je het nog niet weet">
+          </div>
+          <div class="form-knoppen">
+            <button type="button" class="knop knop-secundair" id="th-annuleer" hidden>Annuleren</button>
+            <button type="submit" class="knop" id="th-opslaan">Toevoegen</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="endorser">
+      <span class="v">V</span>
+      <span class="tekst">
+        <small>In samenwerking met</small>
+        <strong>Vlietkinderen</strong>
+      </span>
+    </div>
+    <p class="copy">&copy; 2026 Activiteitenbank.nl</p>
+    <button type="button" class="thema-schakelaar" id="thema-schakelaar" aria-pressed="false">
+      <span class="thema-spoor" aria-hidden="true"><span class="thema-knop"></span></span>
+      <span class="thema-label">Nachtmodus</span>
+    </button>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="admin-auth.js?v=7"></script>
+<script src="data.js?v=7"></script>
+<script src="admin-lijstbeheer.js?v=7"></script>
+<script>
+  (async () => {
+    if (!await vereisLogin()) return;
+    koppelUitloggen();
+
+    let activiteiten = await laadActiviteiten();
+    document.getElementById('werkblad').hidden = false;
+
+    const beheer = beheerLijstje({
+      sleutel: 'th',
+      velden: ['titel', 'tekst', 'aantal'],
+      veldSleutel: v => (v === 'tekst' ? 'samenvatting' : v),
+      nieuwKop: 'Nieuw thema',
+      bewerkKop: 'Thema bewerken',
+      leegTekst: "Nog geen thema's.",
+      activiteiten: () => activiteiten,
+      lees: () => themasLijst(),
+      zet: items => zetThemas(items),
+      bijschrift: t => (t.aantal ? t.aantal + ' activiteiten' : 'aantal nog onbekend'),
+      bouw: invoer => {
+        const titel = invoer.titel.value.trim();
+        if (!titel) return null;
+        const aantal = parseInt(invoer.aantal.value, 10);
+        const thema = { titel, samenvatting: invoer.tekst.value.trim() };
+        if (Number.isFinite(aantal) && aantal > 0) thema.aantal = aantal;
+        return thema;
+      }
+    });
+
+    beheer.teken();
+    document.getElementById('th-telling').textContent =
+      themasLijst().length + " thema's";
+  })();
+</script>
+<script src="thema.js?v=7"></script>
+</body>
+</html>

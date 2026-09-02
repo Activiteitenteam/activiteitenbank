@@ -1227,3 +1227,61 @@ footer .admin-link:hover { opacity: 1; }
   color: var(--zacht);
   margin-bottom: .25rem;
 }
+
+/* ── Startscherm van de admin: tegels naar de beheerpagina's ── */
+.tegels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+.tegel {
+  display: block;
+  background: var(--oppervlak);
+  border-radius: 16px;
+  padding: 1.5rem 1.6rem;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .07);
+  border-top: 6px solid var(--blauw);
+  transition: transform .15s, box-shadow .15s;
+}
+.tegel:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .12);
+}
+.tegel-activiteiten { border-top-color: var(--groen); }
+.tegel-themas       { border-top-color: var(--paars); }
+.tegel-workshops    { border-top-color: var(--oranje); }
+.tegel h3 { font-size: 1.15rem; margin-bottom: .35rem; }
+.tegel p  { font-size: .92rem; color: var(--zacht); }
+.tegel-pijl {
+  display: block;
+  margin-top: .9rem;
+  font-weight: 700;
+  font-size: .9rem;
+  color: var(--blauw);
+}
+.tegel-activiteiten .tegel-pijl { color: var(--donkergroen); }
+.tegel-themas .tegel-pijl       { color: var(--paars); }
+.tegel-workshops .tegel-pijl    { color: var(--oranje); }
+:root[data-thema="donker"] .tegel {
+  box-shadow: 0 0 0 1px var(--rand), 0 3px 10px rgba(0, 0, 0, .35);
+}
+
+/* Kruimelpad terug naar het startscherm */
+.terug-naar-admin {
+  color: var(--zacht);
+  text-decoration: none;
+}
+.terug-naar-admin:hover { color: var(--blauw); text-decoration: underline; }
+
+.logboek-kop {
+  font-size: 1.05rem;
+  margin-bottom: .2rem;
+}
+.logboek-uitleg {
+  font-size: .85rem;
+  color: var(--zacht);
+  margin-bottom: .8rem;
+}

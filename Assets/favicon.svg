@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Activiteitenbank">
+  <!-- De A uit het woordmerk, in de huisstijlkleuren:
+       linkerpoot paars, rechterpoot oranje, dwarsbalk geel, punt blauw. -->
+  <polygon points="25.5,2 35,2 14,58 2,58"   fill="#a0358b"/>
+  <polygon points="33,2 42.5,2 56.5,58 44.5,58" fill="#ed7644"/>
+  <polygon points="23.5,38 40,38 43.5,49 20,49" fill="#f5be41"/>
+  <circle cx="57" cy="53" r="5.5" fill="#0071b9"/>
+</svg>
