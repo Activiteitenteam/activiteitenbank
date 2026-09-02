@@ -45,13 +45,9 @@
 
 <section class="blok titel-losse">
   <div class="filterbalk" id="filterbalk" hidden>
-    <div class="filter-kop">
-      <h2>Filteren op label</h2>
-      <button type="button" class="knop knop-secundair knop-klein" id="filter-wissen" hidden>Alles wissen</button>
-    </div>
-    <p class="filter-uitleg">Kies er meerdere om preciezer te zoeken; een activiteit moet dan alle gekozen labels hebben.</p>
-    <div class="filter-labels" id="filter-labels"></div>
+    <div class="filter-labels" id="filter-labels" role="group" aria-label="Filteren op label"></div>
     <p class="filter-telling" id="filter-telling" aria-live="polite"></p>
+    <button type="button" class="filter-wissen" id="filter-wissen" hidden>Wissen</button>
   </div>
 
   <div class="items" id="activiteiten-lijst"></div>

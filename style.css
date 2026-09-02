@@ -723,76 +723,80 @@ footer .admin-link:hover { opacity: 1; }
 .onderhoud-paneel p  { font-size: .9rem; color: var(--zacht); max-width: 46ch; }
 
 /* ── Filterbalk op de pagina met losse activiteiten ── */
+/* Bewust zonder kader of kop: het zijn maar een paar labels, en een kaart
+   eromheen zou meer aandacht trekken dan de activiteiten eronder. */
 .filterbalk {
-  background: var(--oppervlak);
-  border-radius: 14px;
-  padding: 1.25rem 1.4rem;
-  margin-bottom: 1.75rem;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, .07);
-  border-top: 6px solid var(--groen);
-}
-.filter-kop {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 1rem;
   flex-wrap: wrap;
-}
-.filter-kop h2 { font-size: 1.1rem; }
-.filter-uitleg {
-  font-size: .88rem;
-  color: var(--zacht);
-  margin-top: .2rem;
-  max-width: 60ch;
+  gap: .5rem .75rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rand);
 }
 .filter-labels {
   display: flex;
   flex-wrap: wrap;
   gap: .5rem;
-  margin-top: 1rem;
 }
 .filter-label {
   font: inherit;
   font-size: .82rem;
-  font-weight: 700;
-  padding: .35rem .9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: .3rem .85rem;
   border-radius: 999px;
-  border: 2px solid var(--rand);
-  background: var(--oppervlak);
+  border: 1px solid var(--rand);
+  background: transparent;
   color: var(--zacht);
   cursor: pointer;
   transition: background .15s, border-color .15s, color .15s, opacity .15s;
 }
-.filter-label:hover:not(:disabled) { border-color: var(--groen); color: var(--donkergroen); }
-.filter-label[aria-pressed="true"] {
-  background: var(--groen);
+.filter-label:hover:not(:disabled) {
   border-color: var(--groen);
+  color: var(--donkergroen);
+}
+/* Donkergroen in plaats van groen: wit op --groen haalt maar ~2,5:1
+   contrast, te weinig voor tekst van dit formaat. */
+.filter-label[aria-pressed="true"] {
+  background: var(--donkergroen);
+  border-color: var(--donkergroen);
   color: #fff;
 }
 /* Labels die in combinatie met de huidige keuze niets opleveren */
 .filter-label:disabled {
-  opacity: .35;
+  opacity: .3;
   cursor: not-allowed;
 }
 .filter-label:focus-visible {
-  outline: 3px solid var(--blauw);
+  outline: 2px solid var(--blauw);
   outline-offset: 2px;
 }
+
+/* Teller schuift naar rechts, wisknop sluit erop aan */
 .filter-telling {
-  font-size: .85rem;
+  margin-left: auto;
+  font-size: .82rem;
   color: var(--zachter);
-  margin-top: .9rem;
 }
+.filter-wissen {
+  font: inherit;
+  font-size: .82rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--blauw);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.filter-wissen:hover { color: var(--donkergroen); }
+
 .geen-resultaat {
   text-align: center;
   color: var(--zacht);
   padding: 2.5rem 1rem;
 }
 
-/* In de nachtmodus krijgt de balk dezelfde rand als de kaarten */
-:root[data-thema="donker"] .filterbalk {
-  box-shadow: 0 0 0 1px var(--rand), 0 3px 10px rgba(0, 0, 0, .35);
-}
 :root[data-thema="donker"] .filter-label:hover:not(:disabled) { color: var(--groen); }
 
 /* ── Workshop prikbord: briefjes als post-its ── */
