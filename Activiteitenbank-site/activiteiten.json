@@ -5,7 +5,6 @@
       {
         "titel": "Kunst",
         "samenvatting": "Bij dit thema ontdekken de kinderen de wereld van kunst op een speelse en creatieve manier. Ze experimenteren met verf, vormen en materialen, leren dat er geen goed of fout bestaat in kunst maken, en maken hun eigen unieke kunstwerken om trots op te zijn.",
-        "aantal": 5,
         "boekjes": [],
         "generiek": [
           {
@@ -26,7 +25,12 @@
           }
         ],
         "activiteiten": [
-          "a1dc60e2d"
+          "a3c792343",
+          "aec086a4e",
+          "a1dc60e2d",
+          "a4364c42d",
+          "a8f81d9c7",
+          "a0520c94d"
         ]
       }
     ]
@@ -157,6 +161,7 @@
       "Creativiteit",
       "4-7 jaar",
       "7-12 jaar"
-    ]
+    ],
+    "id": "a0520c94d"
   }
 ]
