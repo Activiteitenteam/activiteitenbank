@@ -1010,14 +1010,57 @@ footer .admin-link:hover { opacity: 1; }
   border-radius: 14px;
 }
 
-/* In de smalle lijstkolom staan de knoppen altijd onder de tekst; anders
-   springen ze per rij van plek, afhankelijk van hoe lang de tekst is. */
+/* Ingeklapte rijen: alleen de titel en wie hem aanleverde, met de knoppen
+   op dezelfde regel. De beschrijving en de labels lees je in de editor
+   ernaast zodra je een activiteit opent. */
 .werkblad-lijst .beheer-rij {
-  flex-direction: column;
-  align-items: stretch;
-  gap: .8rem;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: .75rem;
+  padding: .65rem .5rem .65rem 1.1rem;
+  margin-bottom: .5rem;
 }
-.werkblad-lijst .beheer-rij .acties { justify-content: flex-end; }
+.werkblad-lijst .beheer-rij .info {
+  display: flex;
+  align-items: baseline;
+  gap: .55rem;
+  flex: 1;
+  min-width: 0;          /* anders duwt een lange titel de knoppen weg */
+}
+.werkblad-lijst .beheer-rij h4 {
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.werkblad-lijst .beheer-rij .door {
+  font-size: .78rem;
+  font-style: italic;
+  color: var(--zachter);
+  white-space: nowrap;
+  margin: 0;
+}
+.werkblad-lijst .beheer-rij .acties { flex: none; }
+
+/* Knop onder de lijst om de rest erbij te halen */
+.lijst-meer {
+  display: block;
+  width: 100%;
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 700;
+  padding: .6rem;
+  margin-top: .25rem;
+  border: 1px dashed var(--rand);
+  border-radius: 12px;
+  background: none;
+  color: var(--blauw);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.lijst-meer:hover { border-color: var(--blauw); background: rgba(0, 113, 185, .06); }
+.lijst-meer:focus-visible { outline: 2px solid var(--blauw); outline-offset: 2px; }
 
 /* ── Laadskelet: lege kaartjes terwijl de activiteiten opgehaald worden ── */
 .skelet {

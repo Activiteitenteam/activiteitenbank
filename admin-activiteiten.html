@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Activiteiten beheren - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=15">
-<link rel="icon" href="Assets/favicon.svg?v=15" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=15" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=15">
+<link rel="stylesheet" href="style.css?v=16">
+<link rel="icon" href="Assets/favicon.svg?v=16" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=16" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=16">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -56,6 +56,7 @@
     <div class="werkblad-lijst">
       <div id="beheer-lijst"></div>
       <p class="werkblad-leeg" id="beheer-geen" hidden>Geen activiteiten gevonden.</p>
+      <button type="button" class="lijst-meer" id="lijst-meer" hidden></button>
     </div>
 
     <div class="werkblad-editor">
@@ -136,7 +137,7 @@
 <footer>
   <div class="footer-inner">
     <div class="endorser">
-      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=15"
+      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=16"
            alt="Vlietkinderen" width="640" height="87">
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl &middot; <a class="admin-link" href="admin.html">Admin login</a></p>
@@ -148,9 +149,9 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="admin-auth.js?v=15"></script>
-<script src="data.js?v=15"></script>
-<script src="activiteit-format.js?v=15"></script>
+<script src="admin-auth.js?v=16"></script>
+<script src="data.js?v=16"></script>
+<script src="activiteit-format.js?v=16"></script>
 <script>
   // Inloggen en het sessie-token komen uit admin-auth.js
   const dashboard = document.getElementById('dashboard');
@@ -289,6 +290,11 @@
     });
   }
 
+  // Er staan geen tijdstempels op een activiteit, dus 'nieuwste' leiden we af
+  // uit de volgorde: nieuwe activiteiten worden achteraan toegevoegd.
+  const LIJST_LIMIET = 10;
+  let toonAlleActiviteiten = false;
+
   function tekenLijst() {
     beheerLijst.innerHTML = '';
 
@@ -296,39 +302,48 @@
     // volgnummer in de volledige lijst. Dat nummer reist dus mee; zonder dat
     // zou je bij een actieve zoekterm de verkeerde activiteit te pakken hebben.
     const zoek = zoekVeld.value.trim().toLowerCase();
-    const paren = activiteiten
+    const gevonden = activiteiten
       .map((activiteit, nr) => ({ activiteit, nr }))
-      .filter(({ activiteit }) => !zoek || zoekbareTekst(activiteit).includes(zoek));
+      .filter(({ activiteit }) => !zoek || zoekbareTekst(activiteit).includes(zoek))
+      .reverse();
+
+    // Bij een zoekterm tonen we alles wat past; anders zou je iets ouders
+    // zoeken en het niet vinden omdat het buiten de eerste tien viel.
+    const ingekort = !zoek && !toonAlleActiviteiten && gevonden.length > LIJST_LIMIET;
+    const paren = ingekort ? gevonden.slice(0, LIJST_LIMIET) : gevonden;
 
     beheerTelling.textContent = zoek
-      ? paren.length + ' van ' + activiteiten.length
+      ? gevonden.length + ' van ' + activiteiten.length
       : activiteiten.length + (activiteiten.length === 1 ? ' activiteit' : ' activiteiten');
-    beheerGeen.hidden = paren.length > 0;
+    beheerGeen.hidden = gevonden.length > 0;
+
+    if (zoek || gevonden.length <= LIJST_LIMIET) {
+      lijstMeer.hidden = true;
+    } else {
+      lijstMeer.hidden = false;
+      lijstMeer.textContent = toonAlleActiviteiten
+        ? 'Toon alleen de tien nieuwste'
+        : 'Toon alle ' + gevonden.length + ' activiteiten';
+    }
 
     paren.forEach(({ activiteit: a, nr: i }) => {
       const rij = document.createElement('div');
       rij.className = 'beheer-rij';
       rij.dataset.nr = String(i);
 
+      // Ingeklapt: alleen de titel en wie hem aanleverde. De beschrijving en
+      // de labels zie je in de editor ernaast zodra je hem opent.
       const info = document.createElement('div');
       info.className = 'info';
       const titel = document.createElement('h4');
       titel.textContent = (a.emoji ? a.emoji + ' ' : '') + a.titel;
-      const beschrijving = document.createElement('p');
-      beschrijving.innerHTML = formatteerBeschrijving(a.beschrijving);
-      info.append(titel, beschrijving);
+      info.append(titel);
       if (a.aangeleverdDoor) {
-        const door = document.createElement('p');
+        const door = document.createElement('span');
         door.className = 'door';
-        door.textContent = 'Aangeleverd door ' + a.aangeleverdDoor;
+        door.textContent = a.aangeleverdDoor;
         info.append(door);
       }
-      labelsVan(a).forEach(naam => {
-        const label = document.createElement('span');
-        label.className = 'label';
-        label.textContent = naam;
-        info.append(label);
-      });
 
       const acties = document.createElement('div');
       acties.className = 'acties';
@@ -371,6 +386,12 @@
   }
 
   zoekVeld.addEventListener('input', tekenLijst);
+
+  const lijstMeer = document.getElementById('lijst-meer');
+  lijstMeer.addEventListener('click', () => {
+    toonAlleActiviteiten = !toonAlleActiviteiten;
+    tekenLijst();
+  });
 
   // ── Toevoegen / bewerken ──
   // De tegel opent het (lege) formulier voor een nieuwe activiteit
@@ -557,7 +578,7 @@
     tekenLijst();
   })();
 </script>
-<script src="hero.js?v=15"></script>
-<script src="thema.js?v=15"></script>
+<script src="hero.js?v=16"></script>
+<script src="thema.js?v=16"></script>
 </body>
 </html>
