@@ -8,16 +8,28 @@ const AB_BACKEND_URL = 'https://activiteitenbank-backend.onrender.com';
 const AB_REPO = 'Activiteitenteam/activiteitenbank';
 const AB_ACTIVITEITEN_PAD = 'Activiteitenbank-site/activiteiten.json';
 
-// Vaste labels waaruit in het admin-dashboard gekozen wordt
+// Vaste labels waaruit in het admin-dashboard gekozen wordt. De leeftijden
+// worden herkend aan het cijfer erin en staan daarom apart onderaan; de rest
+// geldt als categorie.
 const AB_PRESET_LABELS = [
   'Creatief',
+  'Creativiteit',
   'Sport',
+  'Sport & bewegen',
   'Natuur',
   'Digitale media',
+  'Koken',
+  'Techniek',
+  'Coderen en programmeren',
+  'Milieu en duurzaamheid',
+  'Lifestyle',
+  'Muziek',
+  'Drama',
+  'Dans',
+  'Cultuur en acceptatie',
   '0-4 jaar',
   '4-7 jaar',
-  '7-12 jaar',
-  'Koken'
+  '7-12 jaar'
 ];
 
 // Emoji's waaruit in de editor gekozen kan worden (komt voor de titel te staan)

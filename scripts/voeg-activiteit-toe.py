@@ -98,6 +98,16 @@ def _zonder_jaar(waarde):
     return waarde[:-5] if waarde.endswith(" jaar") else waarde
 
 
+def _lijkt_op_emoji(waarde):
+    """De keuzelijst is een suggestie, geen slot: elke emoji mag. Deze
+    controle weert alleen invoer die duidelijk geen emoji is, zoals een woord
+    of een zin, zodat er geen tekst in het emoji-veld belandt."""
+    kaal = waarde.strip()
+    if not kaal or len(kaal) > 8:
+        return False
+    return not re.search(r"[A-Za-z0-9]", kaal)
+
+
 def _zoek_optie(waarde, opties):
     gezocht = _kaal(waarde)
     for optie in opties:
@@ -137,11 +147,12 @@ def parseer(tekst, cfg):
         rauw = haal("Voorgestelde emoji")
         if not rauw:
             fouten.append("Voorgestelde emoji is leeg.")
-        elif rauw in cfg["emojis"]:
+        elif rauw in cfg["emojis"] or _lijkt_op_emoji(rauw):
             emoji = rauw
         else:
-            fouten.append('Emoji "' + rauw + '" staat niet in de keuzelijst. '
-                          "Kies er een uit: " + " ".join(cfg["emojis"]))
+            fouten.append('"' + rauw + '" ziet er niet uit als een emoji. '
+                          "Zet er een emoji neer; die hoeft niet uit de "
+                          "keuzelijst te komen.")
 
     labels = []
     for veld, opties, soort in (

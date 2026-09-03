@@ -38,6 +38,20 @@ function abZoekOptie(waarde, opties) {
       || null;
 }
 
+// De keuzelijst is een suggestie, geen slot: bij het plakken mag elke emoji.
+// Deze controle weert alleen invoer die duidelijk geen emoji is, zoals een
+// woord of een zin, zodat er geen tekst in het emoji-veld belandt.
+function abLijktOpEmoji(waarde) {
+  const kaal = String(waarde).trim();
+  if (!kaal || [...kaal].length > 8) return false;
+  try {
+    return /^[\p{Extended_Pictographic}\p{Emoji_Component}\u200d\uFE0F]+$/u.test(kaal);
+  } catch (e) {
+    // Oudere browser zonder Unicode-eigenschappen: dan weren we alleen letters
+    return !/[A-Za-z0-9]/.test(kaal);
+  }
+}
+
 function abSplitsOpKomma(waarde) {
   return String(waarde).split(/[,;]/).map(s => s.trim()).filter(Boolean);
 }
@@ -77,11 +91,11 @@ function parseerActiviteitTekst(tekst) {
   if (!ontbreekt.includes('Voorgestelde emoji')) {
     if (!emojiTekst) {
       fouten.push('Voorgestelde emoji is leeg.');
-    } else if (AB_EMOJIS.includes(emojiTekst)) {
+    } else if (AB_EMOJIS.includes(emojiTekst) || abLijktOpEmoji(emojiTekst)) {
       emoji = emojiTekst;
     } else {
-      fouten.push('Emoji "' + emojiTekst + '" staat niet in de keuzelijst. '
-        + 'Kies er een uit: ' + AB_EMOJIS.join(' '));
+      fouten.push('"' + emojiTekst + '" ziet er niet uit als een emoji. '
+        + 'Zet er één emoji neer; die hoeft niet uit de keuzelijst te komen.');
     }
   }
 
@@ -163,7 +177,8 @@ function bouwAiPrompt() {
     '- Geen enkel veld mag leeg blijven.',
     '- Inleiding, Kern en Slot mogen over meerdere regels lopen.',
     '',
-    'Emoji — kies er precies één uit; iets anders wordt geweigerd:',
+    'Emoji — precies één. Kies er bij voorkeur een uit deze lijst, want die',
+    'staan ook in het keuzemenu; een andere emoji mag ook:',
     groepen,
     '',
     'Categorie — uitsluitend deze waarden:',
