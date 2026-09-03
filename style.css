@@ -117,10 +117,13 @@ nav a {
   color: var(--blauw);
   transition: background .15s, color .15s;
 }
+/* De achtergrond moet bij :focus net zo goed aan als bij :hover. Stond hij er
+   niet, dan werd een link die focus kreeg zonder muis eroverheen wit op wit
+   en dus onleesbaar. */
 nav a:hover, nav a:focus, nav a.actief { color: #fff; }
-nav a.nav-losse:hover,    nav a.nav-losse.actief    { background: var(--groen); }
-nav a.nav-thema:hover,    nav a.nav-thema.actief    { background: var(--paars); }
-nav a.nav-prikbord:hover, nav a.nav-prikbord.actief { background: var(--oranje); }
+nav a.nav-losse:hover,    nav a.nav-losse:focus,    nav a.nav-losse.actief    { background: var(--groen); }
+nav a.nav-thema:hover,    nav a.nav-thema:focus,    nav a.nav-thema.actief    { background: var(--paars); }
+nav a.nav-prikbord:hover, nav a.nav-prikbord:focus, nav a.nav-prikbord.actief { background: var(--oranje); }
 
 /* ── Hero: wisselende banners met transparant blauwe overlay ── */
 .hero {
