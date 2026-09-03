@@ -726,7 +726,9 @@ footer .admin-link:hover { opacity: 1; }
 /* Staat de modus aan, dan valt het paneel op: de site is dan afgesloten */
 .onderhoud-paneel.actief { border-left-color: var(--oranje); }
 .onderhoud-paneel h3 { font-size: 1.05rem; margin-bottom: .15rem; }
-.onderhoud-paneel p  { font-size: .9rem; color: var(--zacht); max-width: 46ch; }
+/* Ruim genoeg voor de langste regel, zodat de uitleg op één regel past.
+   Op een smal scherm loopt hij vanzelf weer door. */
+.onderhoud-paneel p  { font-size: .9rem; color: var(--zacht); max-width: 92ch; }
 
 /* ── Filterbalk op de pagina met losse activiteiten ── */
 /* Bewust zonder kader of kop: het zijn maar een paar labels, en een kaart
@@ -929,7 +931,7 @@ footer .admin-link:hover { opacity: 1; }
   font-size: .82rem;
   color: var(--zachter);
   margin-top: .35rem;
-  max-width: 52ch;
+  max-width: 92ch;
 }
 
 /* ── Adminwerkblad: lijst links, editor rechts ── */
