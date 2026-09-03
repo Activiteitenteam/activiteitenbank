@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=23">
-<link rel="icon" href="Assets/favicon.svg?v=23" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=23" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=23">
+<link rel="stylesheet" href="style.css?v=24">
+<link rel="icon" href="Assets/favicon.svg?v=24" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=24" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=24">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -91,6 +91,7 @@
     <h4 class="logboek-kop">Logboek</h4>
     <p class="logboek-uitleg">Wie heeft wanneer iets gewijzigd. Komt uit de wijzigingsgeschiedenis van de repository.</p>
     <div class="logboek" id="logboek"></div>
+    <button type="button" class="lijst-meer" id="logboek-meer" hidden></button>
 
     <div class="onderhoud-paneel" id="onderhoud-paneel">
       <div>
@@ -106,7 +107,7 @@
 <footer>
   <div class="footer-inner">
     <div class="endorser">
-      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=23"
+      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=24"
            alt="Vlietkinderen" width="640" height="87">
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl</p>
@@ -118,8 +119,8 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="admin-auth.js?v=23"></script>
-<script src="data.js?v=23"></script>
+<script src="admin-auth.js?v=24"></script>
+<script src="data.js?v=24"></script>
 <script>
   const heroBlok   = document.getElementById('hero-blok');
   const loginBlok  = document.getElementById('login-blok');
@@ -194,8 +195,14 @@
   // De backend commit elke opslagactie met het e-mailadres van de admin erin,
   // dus die geschiedenis is het logboek. Openbare repo, dus geen sleutel nodig.
   const logboek = document.getElementById('logboek');
+  const logboekMeer = document.getElementById('logboek-meer');
+  logboekMeer.addEventListener('click', () => {
+    logboekAlles = !logboekAlles;
+    tekenLogboek();
+  });
 
   function toonLogboekMelding(tekst) {
+    logboekMeer.hidden = true;
     logboek.innerHTML = '';
     const p = document.createElement('p');
     p.className = 'logboek-melding';
@@ -203,17 +210,65 @@
     logboek.append(p);
   }
 
-  function schrijfDatum(iso) {
+  // Voluit bij de eerste vijftien, kort zodra je alles opvraagt: dan gaat het
+  // om snel scannen, niet om lezen.
+  function schrijfDatum(iso, kort) {
     const d = new Date(iso);
+    const tijd = d.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+    if (kort) {
+      return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' }) + ' ' + tijd;
+    }
     return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
-      + ' om ' + d.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+      + ' om ' + tijd;
+  }
+
+  const LOGBOEK_GRENS = 15;
+  let logboekRegels = [];
+  let logboekAlles = false;
+
+  function tekenLogboek() {
+    const alles = logboekAlles;
+    const tonen = alles ? logboekRegels : logboekRegels.slice(0, LOGBOEK_GRENS);
+
+    logboek.classList.toggle('compact', alles);
+    logboek.innerHTML = '';
+
+    const lijst = document.createElement('ol');
+    lijst.className = 'logboek-lijst';
+
+    tonen.forEach(regel => {
+      const li = document.createElement('li');
+
+      const wat = document.createElement('span');
+      wat.className = 'logboek-wat';
+      // Ingekort staat de naam voorop; de zin eromheen is dan alleen ruis
+      wat.textContent = alles && regel.wie ? regel.wie : regel.tekst;
+
+      const wanneer = document.createElement('span');
+      wanneer.className = 'logboek-wanneer';
+      wanneer.textContent = schrijfDatum(regel.datum, alles);
+
+      li.append(wat, wanneer);
+      lijst.append(li);
+    });
+
+    logboek.append(lijst);
+
+    if (logboekRegels.length <= LOGBOEK_GRENS) {
+      logboekMeer.hidden = true;
+    } else {
+      logboekMeer.hidden = false;
+      logboekMeer.textContent = alles
+        ? 'Toon alleen de laatste ' + LOGBOEK_GRENS
+        : 'Toon alle ' + logboekRegels.length + ' wijzigingen';
+    }
   }
 
   async function laadLogboek() {
     toonLogboekMelding('Bezig met ophalen…');
     try {
       const url = 'https://api.github.com/repos/' + AB_REPO + '/commits'
-        + '?path=' + encodeURIComponent(AB_ACTIVITEITEN_PAD) + '&per_page=25';
+        + '?path=' + encodeURIComponent(AB_ACTIVITEITEN_PAD) + '&per_page=60';
       const respons = await fetch(url);
       if (!respons.ok) throw new Error('GitHub gaf status ' + respons.status);
 
@@ -223,28 +278,17 @@
         return;
       }
 
-      logboek.innerHTML = '';
-      const lijst = document.createElement('ol');
-      lijst.className = 'logboek-lijst';
-
-      commits.forEach(c => {
+      logboekRegels = commits.map(c => {
         const bericht = (c.commit && c.commit.message || '').split('\n')[0];
-        const wie = (bericht.match(/door\s+(.+)$/) || [])[1];
-
-        const li = document.createElement('li');
-        const wat = document.createElement('span');
-        wat.className = 'logboek-wat';
-        wat.textContent = wie ? 'Activiteiten bijgewerkt door ' + wie : bericht;
-
-        const wanneer = document.createElement('span');
-        wanneer.className = 'logboek-wanneer';
-        wanneer.textContent = schrijfDatum(c.commit.author.date);
-
-        li.append(wat, wanneer);
-        lijst.append(li);
+        const wie = (bericht.match(/door\s+(.+)$/) || [])[1] || '';
+        return {
+          wie,
+          tekst: wie ? 'Activiteiten bijgewerkt door ' + wie : bericht,
+          datum: c.commit.author.date
+        };
       });
 
-      logboek.append(lijst);
+      tekenLogboek();
     } catch (e) {
       console.error('Logboek ophalen mislukt.', e);
       toonLogboekMelding('Het logboek kon niet worden opgehaald. '
@@ -265,7 +309,7 @@
     if (await isIngelogd()) await start();
   })();
 </script>
-<script src="hero.js?v=23"></script>
-<script src="thema.js?v=23"></script>
+<script src="hero.js?v=24"></script>
+<script src="thema.js?v=24"></script>
 </body>
 </html>
