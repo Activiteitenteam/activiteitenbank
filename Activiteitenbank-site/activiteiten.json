@@ -1,5 +1,79 @@
 [
   {
+    "_instelling": "workshops",
+    "items": [
+      {
+        "titel": "Djembé voor kids",
+        "samenvatting": "Trommelworkshop van 45 minuten, incl. instrumenten.",
+        "door": "Sam",
+        "duur": "45 minuten"
+      },
+      {
+        "titel": "Theater & verkleedpret",
+        "samenvatting": "Toneelspelletjes en een mini-voorstelling maken.",
+        "door": "Nadia",
+        "duur": "60 minuten"
+      },
+      {
+        "titel": "Clinic Factory",
+        "samenvatting": "Externe aanbieder van sportworkshops voor KDV, peuteropvang en BSO.",
+        "door": "Clinic Factory",
+        "duur": "In overleg",
+        "website": "https://www.clinicfactory.nl/sportworkshops-kinderopvang/",
+        "email": "info@clinicfactory.nl",
+        "telefoon": "+31 (0)6 307 279 69",
+        "prijs": "Op aanvraag, via een offerte",
+        "aanbod": [
+          {
+            "naam": "Judo: vallen en opvangen",
+            "tekst": "Spelenderwijs bewegen en ontdekken.",
+            "leeftijd": "2-4 jaar"
+          },
+          {
+            "naam": "StrongMini",
+            "tekst": "Grove motoriek, coördinatie en balans.",
+            "leeftijd": "2-4 jaar"
+          },
+          {
+            "naam": "Strongman",
+            "tekst": "Stoere en energieke beweging.",
+            "leeftijd": "4-12 jaar"
+          },
+          {
+            "naam": "Fitboksen",
+            "tekst": "Uitdagende activiteiten.",
+            "leeftijd": "4-12 jaar"
+          },
+          {
+            "naam": "Fitness",
+            "tekst": "Uitdagende activiteiten.",
+            "leeftijd": "4-12 jaar"
+          },
+          {
+            "naam": "Rugby",
+            "tekst": "Uitdagende activiteiten.",
+            "leeftijd": "4-12 jaar"
+          },
+          {
+            "naam": "Basketbal",
+            "tekst": "",
+            "leeftijd": ""
+          },
+          {
+            "naam": "Voetbal",
+            "tekst": "",
+            "leeftijd": ""
+          },
+          {
+            "naam": "Streethockey",
+            "tekst": "",
+            "leeftijd": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
     "_instelling": "themas",
     "items": [
       {
