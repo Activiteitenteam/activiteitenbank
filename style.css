@@ -1435,12 +1435,19 @@ footer .admin-link:hover { opacity: 1; }
   margin: 1.75rem 0 .5rem;
 }
 .thema-kop:first-child { margin-top: 0; }
+/* Bolletjes: het zijn losse documenten, geen doorlopende tekst, en dan leest
+   een lijstje sneller. Geldt ook voor de boekjes, zodat de twee blokken op
+   dezelfde pagina er niet verschillend uitzien. */
 .thema-links {
-  list-style: none;
+  list-style: disc;
   margin: 0;
-  padding: 0;
+  padding-left: 1.3rem;
 }
-.thema-links li { padding: .35rem 0; }
+.thema-links li {
+  padding: .3rem 0;
+  color: var(--zacht);
+}
+.thema-links li::marker { color: var(--paars); }
 .thema-links a,
 .thema-link {
   color: var(--blauw);
