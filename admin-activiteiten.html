@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Activiteiten beheren - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=25">
-<link rel="icon" href="Assets/favicon.svg?v=25" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=25" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=25">
+<link rel="stylesheet" href="style.css?v=27">
+<link rel="icon" href="Assets/favicon.svg?v=27" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=27" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=27">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -137,7 +137,7 @@
 <footer>
   <div class="footer-inner">
     <div class="endorser">
-      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=25"
+      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=27"
            alt="Vlietkinderen" width="640" height="87">
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl &middot; <a class="admin-link" href="admin.html">Admin login</a></p>
@@ -149,10 +149,10 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="admin-auth.js?v=25"></script>
-<script src="data.js?v=25"></script>
-<script src="activiteit-format.js?v=25"></script>
-<script src="ai-prompt.js?v=25"></script>
+<script src="admin-auth.js?v=27"></script>
+<script src="data.js?v=27"></script>
+<script src="activiteit-format.js?v=27"></script>
+<script src="ai-prompt.js?v=27"></script>
 <script>
   // Inloggen en het sessie-token komen uit admin-auth.js
   const dashboard = document.getElementById('dashboard');
@@ -297,10 +297,16 @@
     // volgnummer in de volledige lijst. Dat nummer reist dus mee; zonder dat
     // zou je bij een actieve zoekterm de verkeerde activiteit te pakken hebben.
     const zoek = zoekVeld.value.trim().toLowerCase();
-    const gevonden = activiteiten
+    const passend = activiteiten
       .map((activiteit, nr) => ({ activiteit, nr }))
       .filter(({ activiteit }) => !zoek || zoekbareTekstVan(activiteit).includes(zoek))
       .reverse();
+
+    // Vastgezette eerst; ze tellen mee in de tien maar vallen er nooit buiten
+    const gevonden = [
+      ...passend.filter(p => isVastgezet(p.activiteit)),
+      ...passend.filter(p => !isVastgezet(p.activiteit))
+    ];
 
     // Bij een zoekterm tonen we alles wat past; anders zou je iets ouders
     // zoeken en het niet vinden omdat het buiten de eerste tien viel.
@@ -328,10 +334,12 @@
 
       // Ingeklapt: alleen de titel en wie hem aanleverde. De beschrijving en
       // de labels zie je in de editor ernaast zodra je hem opent.
+      if (isVastgezet(a)) rij.classList.add('vastgezet');
+
       const info = document.createElement('div');
       info.className = 'info';
       const titel = document.createElement('h4');
-      titel.textContent = (a.emoji ? a.emoji + ' ' : '') + a.titel;
+      titel.textContent = (isVastgezet(a) ? '📌 ' : '') + (a.emoji ? a.emoji + ' ' : '') + a.titel;
       info.append(titel);
       if (a.aangeleverdDoor) {
         const door = document.createElement('span');
@@ -342,6 +350,37 @@
 
       const acties = document.createElement('div');
       acties.className = 'acties';
+      const speld = document.createElement('button');
+      speld.type = 'button';
+      speld.className = 'knop knop-klein knop-speld';
+      speld.textContent = isVastgezet(a) ? '📌 Losmaken' : '📌 Vastzetten';
+      speld.title = isVastgezet(a)
+        ? 'Staat bovenaan de lijst; klik om dat ongedaan te maken'
+        : 'Zet deze activiteit bovenaan de lijst';
+      speld.addEventListener('click', async () => {
+        const vast = isVastgezet(a);
+        if (!vast && aantalVastgezet(activiteiten) >= AB_MAX_VASTGEZET) {
+          alert('Er staan er al ' + AB_MAX_VASTGEZET + ' vastgezet. Maak er eerst een los.');
+          return;
+        }
+
+        const kopie = activiteiten.map((item, index) => ({ ...item }));
+        // Losgemaakt betekent weg uit de gegevens, geen 'vastgezet: false'
+        if (vast) delete kopie[i].vastgezet;
+        else kopie[i].vastgezet = true;
+
+        speld.disabled = true;
+        const token = await huidigToken();
+        const gelukt = token && await bewaarActiviteiten(kopie, token);
+        speld.disabled = false;
+        if (gelukt) {
+          activiteiten = kopie;
+          tekenLijst();
+        } else {
+          alert('Vastzetten is niet gelukt. Probeer het opnieuw of log opnieuw in.');
+        }
+      });
+
       const bewerk = document.createElement('button');
       bewerk.className = 'knop knop-klein';
       bewerk.textContent = 'Bewerken';
@@ -364,7 +403,7 @@
           }
         }
       });
-      acties.append(bewerk, verwijder);
+      acties.append(speld, bewerk, verwijder);
 
       // Klikken op de rij zelf opent hem ook; klikken op de knoppen niet
       // dubbel afhandelen.
@@ -573,7 +612,7 @@
     tekenLijst();
   })();
 </script>
-<script src="hero.js?v=25"></script>
-<script src="thema.js?v=25"></script>
+<script src="hero.js?v=27"></script>
+<script src="thema.js?v=27"></script>
 </body>
 </html>

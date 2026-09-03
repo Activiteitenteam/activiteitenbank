@@ -305,6 +305,24 @@ function themaAantal(thema) {
   return generiek + los;
 }
 
+// Vastgezette activiteiten staan altijd bovenaan, in het adminscherm en op de
+// pagina met losse activiteiten. Meer dan drie zou de lijst geen kop meer geven
+// maar hem gewoon herschikken, dus daar ligt de grens.
+const AB_MAX_VASTGEZET = 3;
+
+function isVastgezet(activiteit) {
+  return Boolean(activiteit && activiteit.vastgezet);
+}
+
+function aantalVastgezet(lijst) {
+  return lijst.filter(isVastgezet).length;
+}
+
+// Zet de vastgezette vooraan en laat de rest staan zoals hij stond
+function vastgezetEerst(lijst) {
+  return [...lijst.filter(isVastgezet), ...lijst.filter(a => !isVastgezet(a))];
+}
+
 // Alles waar een zoekbalk op mag matchen: titel, beschrijving, wie hem
 // aanleverde en de labels. Op één plek, zodat het adminscherm en de
 // themakiezer niet uit elkaar lopen.
@@ -385,6 +403,14 @@ function maakActiviteitKaart(activiteit, index) {
   kaart.href = activiteit.id
     ? 'activiteit.html?id=' + encodeURIComponent(activiteit.id)
     : 'activiteit.html?nr=' + index;
+
+  if (isVastgezet(activiteit)) {
+    kaart.classList.add('vastgezet');
+    const merk = document.createElement('span');
+    merk.className = 'vastgezet-merk';
+    merk.textContent = '📌 Uitgelicht';
+    kaart.append(merk);
+  }
 
   const titel = document.createElement('h3');
   titel.textContent = (activiteit.emoji ? activiteit.emoji + ' ' : '') + activiteit.titel;

@@ -1493,3 +1493,33 @@ footer .admin-link:hover { opacity: 1; }
 .logboek.compact .logboek-lijst li { padding: .3rem 0; }
 .logboek.compact .logboek-wat { font-size: .85rem; }
 .logboek.compact .logboek-wanneer { font-size: .78rem; }
+
+/* ── Vastgezette activiteiten ── */
+.item.vastgezet {
+  position: relative;
+  border-top-color: var(--geel);
+}
+.vastgezet-merk {
+  position: absolute;
+  top: -.7rem;
+  right: .9rem;
+  font-size: .72rem;
+  font-weight: 700;
+  padding: .15rem .6rem;
+  border-radius: 999px;
+  background: var(--geel);
+  color: #33302a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
+}
+.beheer-rij.vastgezet { border-left-color: var(--geel); }
+.knop-speld {
+  background: transparent;
+  color: var(--zacht);
+  border: 2px solid var(--rand);
+}
+.knop-speld:hover { border-color: var(--geel); color: var(--tekst); }
+.beheer-rij.vastgezet .knop-speld {
+  background: var(--geel);
+  border-color: var(--geel);
+  color: #33302a;
+}

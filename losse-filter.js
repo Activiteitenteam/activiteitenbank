@@ -44,10 +44,15 @@
 
   const gekozen = new Set();
 
-  // Alle labels die in de lijst voorkomen, op alfabet
-  const alleLabels = [...new Set(alles.flatMap(i => i.labels))].sort(
-    (a, b) => a.localeCompare(b, 'nl')
-  );
+  // Alle vaste labels staan er, ook als er nog geen activiteit mee is: zo zie
+  // je in één oogopslag waarop je kunt filteren. Labels die niets opleveren
+  // worden verderop uitgeschakeld. De volgorde van de vaste lijst blijft
+  // staan, want die zet de categorieën voorop en de leeftijden achteraan.
+  const inGebruik = [...new Set(alles.flatMap(i => i.labels))];
+  const alleLabels = [
+    ...AB_PRESET_LABELS,
+    ...inGebruik.filter(l => !AB_PRESET_LABELS.includes(l)).sort((a, b) => a.localeCompare(b, 'nl'))
+  ];
 
   if (alleLabels.length === 0) {
     tekenLijst(alles);
@@ -63,7 +68,10 @@
   }
 
   function werkBij() {
-    const zichtbaar = alles.filter(past);
+    // Vastgezette bovenaan, maar wel gewoon onderhevig aan het filter: een
+    // activiteit die niet bij de gekozen labels past hoort er niet te staan.
+    const zichtbaar = vastgezetEerst(alles.filter(past).map(i => i.activiteit))
+      .map(activiteit => alles.find(i => i.activiteit === activiteit));
     tekenLijst(zichtbaar);
 
     geenGevond.hidden = zichtbaar.length > 0;
