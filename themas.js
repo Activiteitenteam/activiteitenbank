@@ -14,8 +14,9 @@ function maakThemaKaart(thema, nr) {
 
   const label = document.createElement('span');
   label.className = 'label';
-  label.textContent = thema.aantal
-    ? 'Thema · ' + thema.aantal + ' activiteiten'
+  const aantal = themaAantal(thema);
+  label.textContent = aantal
+    ? 'Thema · ' + aantal + (aantal === 1 ? ' activiteit' : ' activiteiten')
     : 'Thema';
 
   const meer = document.createElement('span');

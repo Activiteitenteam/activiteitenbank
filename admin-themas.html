@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thema's beheren - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=22">
-<link rel="icon" href="Assets/favicon.svg?v=22" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=22" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=22">
+<link rel="stylesheet" href="style.css?v=23">
+<link rel="icon" href="Assets/favicon.svg?v=23" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=23" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=23">
 <script>
   // Thema toepassen voor het tekenen, anders flitst de lichte versie door.
   try {
@@ -63,11 +63,6 @@
             <input type="text" id="th-tekst" placeholder="Waar gaat het thema over?">
           </div>
           <div class="veld-groep">
-            <label for="th-aantal">Aantal activiteiten</label>
-            <input type="text" id="th-aantal" placeholder="Laat leeg als je het nog niet weet">
-          </div>
-
-          <div class="veld-groep">
             <label id="boekjes-kop">Boekjes</label>
             <p class="veld-uitleg">Links naar de themaboekjes. Je kunt er meerdere kwijt.</p>
             <div id="th-boekjes" aria-labelledby="boekjes-kop"></div>
@@ -101,7 +96,7 @@
 <footer>
   <div class="footer-inner">
     <div class="endorser">
-      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=22"
+      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=23"
            alt="Vlietkinderen" width="640" height="87">
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl</p>
@@ -113,9 +108,9 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="admin-auth.js?v=22"></script>
-<script src="data.js?v=22"></script>
-<script src="admin-lijstbeheer.js?v=22"></script>
+<script src="admin-auth.js?v=23"></script>
+<script src="data.js?v=23"></script>
+<script src="admin-lijstbeheer.js?v=23"></script>
 <script>
   (async () => {
     if (!await vereisLogin()) return;
@@ -229,7 +224,7 @@
 
     const beheer = beheerLijstje({
       sleutel: 'th',
-      velden: ['titel', 'tekst', 'aantal'],
+      velden: ['titel', 'tekst'],
       veldSleutel: v => (v === 'tekst' ? 'samenvatting' : v),
       nieuwKop: 'Nieuw thema',
       bewerkKop: 'Thema bewerken',
@@ -239,7 +234,8 @@
       zet: items => zetThemas(items),
       bijschrift: t => {
         const delen = [];
-        if (t.aantal) delen.push(t.aantal + ' activiteiten');
+        const aantal = themaAantal(t);
+        if (aantal) delen.push(aantal + (aantal === 1 ? ' activiteit' : ' activiteiten'));
         if (Array.isArray(t.boekjes) && t.boekjes.length) {
           delen.push(t.boekjes.length + (t.boekjes.length === 1 ? ' boekje' : ' boekjes'));
         }
@@ -274,11 +270,10 @@
         const titel = invoer.titel.value.trim();
         if (!titel) return null;
 
-        const aantal = parseInt(invoer.aantal.value, 10);
         const thema = { ...(origineel || {}), titel, samenvatting: invoer.tekst.value.trim() };
-
-        if (Number.isFinite(aantal) && aantal > 0) thema.aantal = aantal;
-        else delete thema.aantal;
+        // Het aantal wordt geteld uit de links en de gekoppelde activiteiten,
+        // dus een eerder ingevuld getal hoort hier niet meer thuis.
+        delete thema.aantal;
 
         thema.boekjes = boekjes.lees();
         thema.generiek = generiek.lees();
@@ -299,6 +294,6 @@
       themasLijst().length + " thema's";
   })();
 </script>
-<script src="thema.js?v=22"></script>
+<script src="thema.js?v=23"></script>
 </body>
 </html>

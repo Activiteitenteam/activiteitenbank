@@ -206,11 +206,11 @@ const AB_STANDAARD_WORKSHOPS = [
 
 const AB_STANDAARD_THEMAS = [
   { titel: 'Zomer & water',
-    samenvatting: 'Waterspellen, proefjes en knutsels voor warme dagen.', aantal: 12 },
+    samenvatting: 'Waterspellen, proefjes en knutsels voor warme dagen.' },
   { titel: 'De natuur in',
-    samenvatting: 'Avontuurlijke buitenactiviteiten rond bos en tuin.', aantal: 9 },
+    samenvatting: 'Avontuurlijke buitenactiviteiten rond bos en tuin.' },
   { titel: 'Kunst & kleur',
-    samenvatting: 'Schilderen, bouwen en ontwerpen als echte kunstenaars.', aantal: 10 }
+    samenvatting: 'Schilderen, bouwen en ontwerpen als echte kunstenaars.' }
 ];
 
 let AB_WORKSHOPS_OPSLAG = null;   // null = nog niets opgehaald
@@ -292,6 +292,17 @@ async function zetOnderhoud(aan, lijst, token) {
   const gelukt = await bewaarActiviteiten(lijst, token);
   if (!gelukt) AB_ONDERHOUD = vorige;
   return gelukt;
+}
+
+// Hoeveel activiteiten hangen er aan een thema: de generieke links plus de
+// losse activiteiten die eraan gekoppeld zijn. Afgeleid en niet ingevuld,
+// zodat het getal niet uit de pas kan lopen met de inhoud.
+function themaAantal(thema) {
+  const generiek = Array.isArray(thema.generiek)
+    ? thema.generiek.length
+    : (thema.generiek && thema.generiek.url ? 1 : 0);
+  const los = Array.isArray(thema.activiteiten) ? thema.activiteiten.length : 0;
+  return generiek + los;
 }
 
 // Alles waar een zoekbalk op mag matchen: titel, beschrijving, wie hem
