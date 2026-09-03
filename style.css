@@ -1387,3 +1387,43 @@ footer .admin-link:hover { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
   .emoji-keuze .chip { animation: none; }
 }
+
+/* ── Aanbieder met meerdere workshops op de detailpagina ── */
+.aanbod-kop {
+  font-size: 1.15rem;
+  margin: 1.75rem 0 .25rem;
+  color: var(--oranje);
+}
+.aanbod-lijst {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+.aanbod-lijst li {
+  padding: .8rem 0;
+  border-bottom: 1px solid var(--rand);
+}
+.aanbod-lijst li:last-child { border-bottom: 0; }
+.aanbod-lijst p {
+  font-size: .92rem;
+  color: var(--zacht);
+  margin-top: .15rem;
+}
+.aanbod-leeftijd {
+  display: inline-block;
+  margin-left: .5rem;
+  font-size: .75rem;
+  font-weight: 700;
+  padding: .1rem .55rem;
+  border-radius: 999px;
+  background: var(--gebroken-wit);
+  color: var(--zacht);
+}
+.aanbod-prijs {
+  display: inline-block;
+  margin-top: .3rem;
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--donkergroen);
+}
+.workshop-gegevens a { color: var(--blauw); }

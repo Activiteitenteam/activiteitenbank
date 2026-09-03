@@ -136,6 +136,9 @@ let AB_ONDERHOUD = false;
 // Workshops en thema's worden op dezelfde manier bewaard: als instellingsregel
 // met een items-lijst erin. Staat er nog niets in de opslag, dan gelden deze
 // standaardlijsten, zodat de site niet leeg is voordat er iets is ingevuld.
+// Een briefje kan ook een externe aanbieder zijn. Dan staat er een 'aanbod'
+// bij: de losse workshops die zij geven, die je op de detailpagina op een rij
+// ziet. Prijzen alleen invullen als de aanbieder ze zelf noemt.
 const AB_STANDAARD_WORKSHOPS = [
   { titel: 'Djembé voor kids',
     samenvatting: 'Trommelworkshop van 45 minuten, incl. instrumenten.',
@@ -145,7 +148,30 @@ const AB_STANDAARD_WORKSHOPS = [
     door: 'Nadia', duur: '60 minuten' },
   { titel: 'Proefjes-lab',
     samenvatting: 'Veilige wetenschapsproefjes met huis-tuin-en-keukenspullen.',
-    door: 'Kim', duur: '45 minuten' }
+    door: 'Kim', duur: '45 minuten' },
+
+  { titel: 'Clinic Factory',
+    samenvatting: 'Externe aanbieder van sportworkshops voor KDV, peuteropvang en BSO.',
+    door: 'Clinic Factory',
+    duur: 'In overleg',
+    website: 'https://www.clinicfactory.nl/sportworkshops-kinderopvang/',
+    email: 'info@clinicfactory.nl',
+    telefoon: '+31 (0)6 307 279 69',
+    // Clinic Factory noemt op hun site geen tarieven; die vraag je per
+    // offerte op. Hier dus bewust geen bedragen invullen.
+    prijs: 'Op aanvraag, via een offerte',
+    aanbod: [
+      { naam: 'Judo: vallen en opvangen', tekst: 'Spelenderwijs bewegen en ontdekken.', leeftijd: '2-4 jaar' },
+      { naam: 'StrongMini',               tekst: 'Grove motoriek, coördinatie en balans.', leeftijd: '2-4 jaar' },
+      { naam: 'Strongman',                tekst: 'Stoere en energieke beweging.', leeftijd: '4-12 jaar' },
+      { naam: 'Fitboksen',                tekst: 'Uitdagende activiteiten.', leeftijd: '4-12 jaar' },
+      { naam: 'Fitness',                  tekst: 'Uitdagende activiteiten.', leeftijd: '4-12 jaar' },
+      { naam: 'Rugby',                    tekst: 'Uitdagende activiteiten.', leeftijd: '4-12 jaar' },
+      { naam: 'Basketbal',                tekst: '', leeftijd: '' },
+      { naam: 'Voetbal',                  tekst: '', leeftijd: '' },
+      { naam: 'Streethockey',             tekst: '', leeftijd: '' }
+    ]
+  }
 ];
 
 const AB_STANDAARD_THEMAS = [

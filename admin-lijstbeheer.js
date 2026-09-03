@@ -107,7 +107,11 @@ function beheerLijstje(cfg) {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const item = cfg.bouw(invoer);
+    // Het oorspronkelijke item gaat mee, zodat velden die niet in het
+    // formulier staan behouden blijven. Zonder dat zou het bewerken van
+    // bijvoorbeeld een aanbieder zijn hele workshoplijst wissen.
+    const origineel = bewerkt === null ? null : cfg.lees()[bewerkt];
+    const item = cfg.bouw(invoer, origineel);
     if (!item) return;
 
     const kopie = cfg.lees();

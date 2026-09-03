@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Workshop - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=17">
-<link rel="icon" href="Assets/favicon.svg?v=17" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=17" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=17">
+<link rel="stylesheet" href="style.css?v=18">
+<link rel="icon" href="Assets/favicon.svg?v=18" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=18" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=18">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -16,7 +16,7 @@
     if (bewaardThema === 'donker') document.documentElement.dataset.thema = 'donker';
   } catch (e) {}
 </script>
-<script src="onderhoudmodus.js?v=17"></script>
+<script src="onderhoudmodus.js?v=18"></script>
 </head>
 <body>
 
@@ -47,6 +47,7 @@
   <div class="detail-kaart detail-prikbord" id="workshop-kaart">
     <p id="workshop-tekst"></p>
     <dl class="workshop-gegevens" id="workshop-gegevens"></dl>
+    <div id="workshop-aanbod"></div>
     <p class="volgt-nog" id="workshop-volgt">
       📌 De volledige beschrijving van deze workshop komt nog. Wil je hem nu al inplannen,
       neem dan contact op met de collega die hem aanbiedt.
@@ -57,7 +58,7 @@
 <footer>
   <div class="footer-inner">
     <div class="endorser">
-      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=17"
+      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=18"
            alt="Vlietkinderen" width="640" height="87">
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl &middot; <a class="admin-link" href="admin.html">Admin login</a></p>
@@ -68,8 +69,8 @@
   </div>
 </footer>
 
-<script src="data.js?v=17"></script>
-<script src="workshops.js?v=17"></script>
+<script src="data.js?v=18"></script>
+<script src="workshops.js?v=18"></script>
 <script>
   (async () => {
   const nr = Number(new URLSearchParams(location.search).get('nr'));
@@ -89,7 +90,11 @@
     document.getElementById('workshop-tekst').textContent = workshop.samenvatting;
 
     const gegevens = document.getElementById('workshop-gegevens');
-    [['Aangeboden door', workshop.door], ['Duur', workshop.duur]].forEach(([kop, waarde]) => {
+    [['Aangeboden door', workshop.door],
+     ['Duur', workshop.duur],
+     ['Kosten', workshop.prijs],
+     ['E-mail', workshop.email],
+     ['Telefoon', workshop.telefoon]].forEach(([kop, waarde]) => {
       if (!waarde) return;
       const dt = document.createElement('dt');
       dt.textContent = kop;
@@ -97,10 +102,66 @@
       dd.textContent = waarde;
       gegevens.append(dt, dd);
     });
+
+    if (workshop.website) {
+      const dt = document.createElement('dt');
+      dt.textContent = 'Website';
+      const dd = document.createElement('dd');
+      const link = document.createElement('a');
+      link.href = workshop.website;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = workshop.website.replace(/^https?:\/\//, '').replace(/\/$/, '');
+      dd.append(link);
+      gegevens.append(dt, dd);
+    }
+
+    // Is het een aanbieder, dan volgt hier hun aanbod op een rij
+    if (Array.isArray(workshop.aanbod) && workshop.aanbod.length) {
+      const vak = document.getElementById('workshop-aanbod');
+      const kop = document.createElement('h2');
+      kop.className = 'aanbod-kop';
+      kop.textContent = 'Workshops van deze aanbieder';
+      vak.append(kop);
+
+      const lijst = document.createElement('ul');
+      lijst.className = 'aanbod-lijst';
+
+      workshop.aanbod.forEach(item => {
+        const li = document.createElement('li');
+
+        const naam = document.createElement('strong');
+        naam.textContent = item.naam;
+        li.append(naam);
+
+        if (item.leeftijd) {
+          const leeftijd = document.createElement('span');
+          leeftijd.className = 'aanbod-leeftijd';
+          leeftijd.textContent = item.leeftijd;
+          li.append(leeftijd);
+        }
+        if (item.tekst) {
+          const tekst = document.createElement('p');
+          tekst.textContent = item.tekst;
+          li.append(tekst);
+        }
+        if (item.prijs) {
+          const prijs = document.createElement('span');
+          prijs.className = 'aanbod-prijs';
+          prijs.textContent = item.prijs;
+          li.append(prijs);
+        }
+
+        lijst.append(li);
+      });
+
+      vak.append(lijst);
+      document.getElementById('workshop-volgt').hidden = true;
+    }
   }
   })();
 </script>
-<script src="hero.js?v=17"></script>
-<script src="thema.js?v=17"></script>
+<script src="hero.js?v=18"></script>
+<script src="thema.js?v=18"></script>
 </body>
 </html>

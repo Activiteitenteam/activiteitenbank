@@ -13,7 +13,11 @@ function maakWorkshopBriefje(workshop, nr) {
 
   const door = document.createElement('span');
   door.className = 'postit-door';
-  door.textContent = workshop.door ? 'Aangeboden door ' + workshop.door : '';
+  // Bij een aanbieder is het aantal workshops nuttiger dan alleen de naam
+  const aantal = Array.isArray(workshop.aanbod) ? workshop.aanbod.length : 0;
+  door.textContent = aantal
+    ? workshop.door + ' · ' + aantal + ' workshops'
+    : (workshop.door ? 'Aangeboden door ' + workshop.door : '');
 
   const meer = document.createElement('span');
   meer.className = 'postit-meer';
