@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thema's beheren - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=20">
-<link rel="icon" href="Assets/favicon.svg?v=20" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=20" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=20">
+<link rel="stylesheet" href="style.css?v=22">
+<link rel="icon" href="Assets/favicon.svg?v=22" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=22" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=22">
 <script>
   // Thema toepassen voor het tekenen, anders flitst de lichte versie door.
   try {
@@ -75,16 +75,16 @@
           </div>
 
           <div class="veld-groep">
-            <label for="th-generiek-url">Generieke activiteiten</label>
-            <p class="veld-uitleg">Link naar de activiteiten die altijd bij dit thema passen.</p>
-            <input type="text" id="th-generiek-titel" placeholder="Omschrijving van de link">
-            <input type="url" id="th-generiek-url" placeholder="https://...">
+            <label id="generiek-kop">Generieke activiteiten</label>
+            <p class="veld-uitleg">Links naar activiteiten die altijd bij dit thema passen. Je kunt er meerdere kwijt.</p>
+            <div id="th-generiek" aria-labelledby="generiek-kop"></div>
+            <button type="button" class="knop knop-secundair knop-klein" id="th-generiek-erbij">+ Link</button>
           </div>
 
           <div class="veld-groep">
             <label id="th-act-kop">Losse activiteiten in dit thema</label>
             <p class="veld-uitleg">Vink aan welke activiteiten uit de bank bij dit thema horen.</p>
-            <input type="search" class="werkbalk-zoek" id="th-act-zoek" placeholder="Zoeken in activiteiten">
+            <input type="search" class="werkbalk-zoek" id="th-act-zoek" placeholder="Zoeken op titel, label of naam">
             <div class="thema-activiteiten" id="th-activiteiten" aria-labelledby="th-act-kop"></div>
           </div>
 
@@ -101,7 +101,7 @@
 <footer>
   <div class="footer-inner">
     <div class="endorser">
-      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=20"
+      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=22"
            alt="Vlietkinderen" width="640" height="87">
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl</p>
@@ -113,9 +113,9 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="admin-auth.js?v=20"></script>
-<script src="data.js?v=20"></script>
-<script src="admin-lijstbeheer.js?v=20"></script>
+<script src="admin-auth.js?v=22"></script>
+<script src="data.js?v=22"></script>
+<script src="admin-lijstbeheer.js?v=22"></script>
 <script>
   (async () => {
     if (!await vereisLogin()) return;
@@ -124,49 +124,57 @@
     let activiteiten = await laadActiviteiten();
     document.getElementById('werkblad').hidden = false;
 
-    // ── Boekjes: een rijtje links dat kan groeien en krimpen ──
-    const boekjesVak = document.getElementById('th-boekjes');
+    // ── Rijtjes met links: boekjes en generieke activiteiten werken hetzelfde,
+    //    dus één bouwsteen die twee keer wordt gebruikt. ──
+    function linkRijtje(vakId, knopId, naamPlaatshouder) {
+      const vak = document.getElementById(vakId);
 
-    function boekjeRij(boekje) {
-      const rij = document.createElement('div');
-      rij.className = 'link-rij';
+      function rijErbij(link) {
+        const rij = document.createElement('div');
+        rij.className = 'link-rij';
 
-      const titel = document.createElement('input');
-      titel.type = 'text';
-      titel.className = 'link-titel';
-      titel.placeholder = 'Naam van het boekje';
-      titel.value = (boekje && boekje.titel) || '';
+        const titel = document.createElement('input');
+        titel.type = 'text';
+        titel.className = 'link-titel';
+        titel.placeholder = naamPlaatshouder;
+        titel.value = (link && link.titel) || '';
 
-      const url = document.createElement('input');
-      url.type = 'url';
-      url.className = 'link-url';
-      url.placeholder = 'https://...';
-      url.value = (boekje && boekje.url) || '';
+        const url = document.createElement('input');
+        url.type = 'url';
+        url.className = 'link-url';
+        url.placeholder = 'https://...';
+        url.value = (link && link.url) || '';
 
-      const weg = document.createElement('button');
-      weg.type = 'button';
-      weg.className = 'knop knop-gevaar knop-klein';
-      weg.textContent = 'Weg';
-      weg.addEventListener('click', () => rij.remove());
+        const weg = document.createElement('button');
+        weg.type = 'button';
+        weg.className = 'knop knop-gevaar knop-klein';
+        weg.textContent = 'Weg';
+        weg.addEventListener('click', () => rij.remove());
 
-      rij.append(titel, url, weg);
-      boekjesVak.append(rij);
-      return rij;
+        rij.append(titel, url, weg);
+        vak.append(rij);
+        return rij;
+      }
+
+      document.getElementById(knopId).addEventListener('click', () => {
+        rijErbij().querySelector('.link-titel').focus();
+      });
+
+      return {
+        leeg: () => { vak.innerHTML = ''; },
+        vul: links => { vak.innerHTML = ''; (links || []).forEach(rijErbij); },
+        lees: () => [...vak.querySelectorAll('.link-rij')]
+          .map(rij => ({
+            titel: rij.querySelector('.link-titel').value.trim(),
+            url: rij.querySelector('.link-url').value.trim()
+          }))
+          // Een rij zonder adres heeft geen zin; die laten we weg
+          .filter(l => l.url)
+      };
     }
 
-    document.getElementById('th-boekje-erbij').addEventListener('click', () => {
-      boekjeRij().querySelector('.link-titel').focus();
-    });
-
-    function leesBoekjes() {
-      return [...boekjesVak.querySelectorAll('.link-rij')]
-        .map(rij => ({
-          titel: rij.querySelector('.link-titel').value.trim(),
-          url: rij.querySelector('.link-url').value.trim()
-        }))
-        // Een rij zonder adres heeft geen zin; die laten we weg
-        .filter(b => b.url);
-    }
+    const boekjes  = linkRijtje('th-boekjes', 'th-boekje-erbij', 'Naam van het boekje');
+    const generiek = linkRijtje('th-generiek', 'th-generiek-erbij', 'Omschrijving van de link');
 
     // ── Activiteiten aanvinken ──
     const actVak = document.getElementById('th-activiteiten');
@@ -176,8 +184,10 @@
       const zoek = actZoek.value.trim().toLowerCase();
       actVak.innerHTML = '';
 
+      // Zoekt door alle activiteiten en door alles wat erin staat: titel,
+      // beschrijving, wie hem aanleverde en de labels.
       const passend = activiteiten.filter(a =>
-        !zoek || (a.titel || '').toLowerCase().includes(zoek));
+        !zoek || zoekbareTekstVan(a).includes(zoek));
 
       if (passend.length === 0) {
         const leeg = document.createElement('p');
@@ -233,6 +243,8 @@
         if (Array.isArray(t.boekjes) && t.boekjes.length) {
           delen.push(t.boekjes.length + (t.boekjes.length === 1 ? ' boekje' : ' boekjes'));
         }
+        const gLinks = Array.isArray(t.generiek) ? t.generiek.length : (t.generiek ? 1 : 0);
+        if (gLinks) delen.push(gLinks + (gLinks === 1 ? ' generieke link' : ' generieke links'));
         if (Array.isArray(t.activiteiten) && t.activiteiten.length) {
           delen.push(t.activiteiten.length + ' gekoppeld');
         }
@@ -240,20 +252,19 @@
       },
 
       leegExtra: () => {
-        boekjesVak.innerHTML = '';
-        document.getElementById('th-generiek-titel').value = '';
-        document.getElementById('th-generiek-url').value = '';
+        boekjes.leeg();
+        generiek.leeg();
         actZoek.value = '';
         gekozenNu = [];
         tekenActiviteiten([]);
       },
 
       vulExtra: item => {
-        boekjesVak.innerHTML = '';
-        (item.boekjes || []).forEach(boekjeRij);
-        const generiek = item.generiek || {};
-        document.getElementById('th-generiek-titel').value = generiek.titel || '';
-        document.getElementById('th-generiek-url').value = generiek.url || '';
+        boekjes.vul(item.boekjes);
+        // Eerder was dit één losse link; die tonen we als eerste rij
+        generiek.vul(Array.isArray(item.generiek)
+          ? item.generiek
+          : (item.generiek && item.generiek.url ? [item.generiek] : []));
         actZoek.value = '';
         gekozenNu = (item.activiteiten || []).slice();
         tekenActiviteiten(gekozenNu);
@@ -269,12 +280,8 @@
         if (Number.isFinite(aantal) && aantal > 0) thema.aantal = aantal;
         else delete thema.aantal;
 
-        thema.boekjes = leesBoekjes();
-
-        const gTitel = document.getElementById('th-generiek-titel').value.trim();
-        const gUrl = document.getElementById('th-generiek-url').value.trim();
-        if (gUrl) thema.generiek = { titel: gTitel, url: gUrl };
-        else delete thema.generiek;
+        thema.boekjes = boekjes.lees();
+        thema.generiek = generiek.lees();
 
         // Ook de aangevinkte activiteiten die door de zoekterm buiten beeld staan
         thema.activiteiten = [...new Set([
@@ -292,6 +299,6 @@
       themasLijst().length + " thema's";
   })();
 </script>
-<script src="thema.js?v=20"></script>
+<script src="thema.js?v=22"></script>
 </body>
 </html>

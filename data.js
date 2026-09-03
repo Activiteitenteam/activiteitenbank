@@ -109,25 +109,25 @@ function nieuwActiviteitId(titel, bezet) {
 // (bijvoorbeeld tijdens het opstarten na een periode van inactiviteit).
 const STANDAARD_ACTIVITEITEN = [
   {
-    emoji: '🐌',
-    titel: 'Slakken zoeken in de tuin',
-    beschrijving: 'Natuuractiviteit voor buiten, met zoekkaart.',
-    labels: ['Natuur', '4-7 jaar'],
-    aangeleverdDoor: 'Sam'
+    emoji: "🌈",
+    titel: "Dromenvangers maken",
+    beschrijving: "*Inleiding*\nVertel de kinderen over dromenvangers en hun oorsprong. Leg uit dat dromenvangers worden gebruikt om goede dromen te vangen en nare dromen weg te houden. Toon enkele voorbeelden om de kinderen te inspireren en vertel dat ze hun eigen dromenvanger gaan maken en die kunnen versieren zoals ze zelf willen.\n\nJe kunt de volgende verrijkingsvragen stellen: wat voor dromen denk je dat jouw dromenvanger zal vangen, kun je bedenken waar de traditie van dromenvangers vandaan komt, en welke kleuren gebruik je voor jouw dromenvanger en waarom.\n\n*Kern*\nGeef elk kind een metalen ring, cinildraad, kralen en veren. Laat de kinderen beginnen door het cinildraad om de metalen ring te draaien; dit vormt de basis van de dromenvanger en geeft een mooie, kleurrijke rand.\n\nLaat de kinderen daarna een stuk dunne draad kiezen en aan het begin een dikke knoop maken zodat de draad niet uit de ring glijdt. Laat ze de draad door en om de ring rijgen, met zoveel of zo weinig kralen als ze willen, en moedig ze aan om in het midden van de ring patronen te maken zodat de draden elkaar kruisen en een mooi web vormen.\n\nLaat de kinderen zodra het web klaar is veren vastmaken aan de onderkant van de dromenvanger voor een speels en traditioneel effect. Knoop tot slot het einde van de draad vast om alles op zijn plaats te houden.\n\nBenodigd: metalen ringen, cinildraad, scharen, draad, kralen, veren en kleurpotloden of stiften. Duur: 45 tot 60 minuten.\n\n*Slot*\nLaat de kinderen hun zelfgemaakte dromenvangers bewonderen en eventueel aan elkaar presenteren. Bespreek kort wat ze hebben geleerd over dromenvangers en waarom mensen ze denken te maken. De kinderen kunnen hun dromenvanger mee naar huis nemen en boven hun bed hangen om mooie dromen te vangen.",
+    aangeleverdDoor: "Tessa",
+    labels: ["Creativiteit", "4-7 jaar", "7-12 jaar"]
   },
   {
-    emoji: '🎨',
-    titel: 'Zoutdeeg figuren',
-    beschrijving: 'Kneden, vormen en bakken met eenvoudig recept.',
-    labels: ['Creativiteit', '4-7 jaar'],
-    aangeleverdDoor: 'Nadia'
+    emoji: "🎭",
+    titel: "Het Evolutiespel",
+    beschrijving: "*Inleiding*\nVertel de kinderen dat jullie het evolutiespel gaan spelen. Iedereen begint als kleine mier en wordt steeds sterker door van andere mieren te winnen. Leg uit dat het de bedoeling is om een dier te zoeken dat hetzelfde is als jijzelf, die aan te tikken en dan steen-papier-schaar te spelen. Win je, dan evolueer je naar het volgende dier. Verlies je, dan word je juist het vorige dier weer.\n\nLeg de dieren en bewegingen uit: de mier loopt heel snel en maakt veel bewegingen, de kikker springt over het veld, de aap loopt met de armen onder de oksels en roept oeh aah, de olifant loopt met een slurf, en de leeuw loopt op vier poten. Vertel dat als je een leeuw bent en je wint steen-papier-schaar van een andere leeuw, je het spel wint en bij de spelbegeleider mag gaan staan.\n\n*Kern*\nStart het spel en laat de kinderen vrij rondlopen in de open ruimte, terwijl ze de bewegingen van hun dier uitvoeren. Moedig ze aan om andere dieren van dezelfde soort te vinden en ze aan te tikken. Wanneer twee spelers van dezelfde diersoort elkaar vinden, spelen ze steen-papier-schaar om te bepalen wie evolueert en wie hetzelfde blijft. Laat de winnaar evolueren naar het volgende dier in de reeks en de bijbehorende beweging uitvoeren.\n\nBenodigd: een school-, white- of digibord en een open ruimte, bijvoorbeeld een lokaal of speelzaal. Duur: 20 tot 30 minuten.\n\n*Slot*\nBespreek met de kinderen hoe het spel is gegaan. Vraag wie er is geëvolueerd tot leeuw en hoe dat voelde, en wat ze leuk vonden aan de verschillende dierenbewegingen.",
+    aangeleverdDoor: "Joris",
+    labels: ["Drama", "7-12 jaar"]
   },
   {
-    emoji: '🎲',
-    titel: 'Levend memory',
-    beschrijving: 'Actief groepsspel voor binnen of buiten.',
-    labels: ['Sport & bewegen', '7-12 jaar'],
-    aangeleverdDoor: 'Kim'
+    emoji: "🌈",
+    titel: "Verven met ijs",
+    beschrijving: "*Inleiding*\nLaat de kinderen de ijsklontjes zien en geef ze de tijd om het gek of spannend te vinden. Laat zien dat je door met een ijsklontje over papier te strijken ook kunt verven.\n\n*Kern*\nLaat de kinderen op hun eigen stuk papier verven met de gekleurde ijsklontjes. Een leuke en simpele opdracht is het maken van een regenboog. Gebruik eventueel ijsstokjes voor kinderen die het niet prettig vinden om rechtstreeks met een ijsklontje te verven, en houd er rekening mee dat het smeltende ijs voor een kliederboel kan zorgen.\n\nBereid van tevoren plakkaatverf gemengd met water in en vries dit in als ijsklontjes, in verschillende kleuren.\n\nBenodigd: plakkaatverf, een vriezer en papier, elk formaat is goed. Duur: ongeveer 30 minuten.\n\n*Slot*\nLaat de kinderen hun verfwerk bekijken en laten drogen. Bespreek kort welke kleuren ze hebben gebruikt en wat ze bijzonder vonden aan het verven met ijs in plaats van een kwast.",
+    aangeleverdDoor: "Freddie",
+    labels: ["Creativiteit", "0-4 jaar"]
   }
 ];
 
@@ -292,6 +292,15 @@ async function zetOnderhoud(aan, lijst, token) {
   const gelukt = await bewaarActiviteiten(lijst, token);
   if (!gelukt) AB_ONDERHOUD = vorige;
   return gelukt;
+}
+
+// Alles waar een zoekbalk op mag matchen: titel, beschrijving, wie hem
+// aanleverde en de labels. Op één plek, zodat het adminscherm en de
+// themakiezer niet uit elkaar lopen.
+function zoekbareTekstVan(activiteit) {
+  return [activiteit.titel, activiteit.beschrijving, activiteit.aangeleverdDoor,
+          ...labelsVan(activiteit)]
+    .filter(Boolean).join(' ').toLowerCase();
 }
 
 // Haalt de actuele activiteiten op bij de backend. Let op: dit is nu een
