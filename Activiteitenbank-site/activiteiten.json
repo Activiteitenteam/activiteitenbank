@@ -4,8 +4,30 @@
     "items": [
       {
         "titel": "Kunst",
-        "samenvatting": "Voorbeeld",
-        "aantal": 5
+        "samenvatting": "Bij dit thema ontdekken de kinderen de wereld van kunst op een speelse en creatieve manier. Ze experimenteren met verf, vormen en materialen, leren dat er geen goed of fout bestaat in kunst maken, en maken hun eigen unieke kunstwerken om trots op te zijn.",
+        "aantal": 5,
+        "boekjes": [],
+        "generiek": [
+          {
+            "titel": "Woordzoeker speurtocht",
+            "url": "https://stichtingvlietkinderenvb-my.sharepoint.com/:f:/g/personal/j_vanveen_vlietkinderen_nl/IgDz8ikAkT_8RLEESTMMQKkMAQZSNi2D-tDMiPx59Il4PLI?e=NudiZr"
+          },
+          {
+            "titel": "Flippit'",
+            "url": "https://stichtingvlietkinderenvb-my.sharepoint.com/:f:/g/personal/j_vanveen_vlietkinderen_nl/IgAXbNYn-TAsRKPRmmfGqjnjAd4j7iexBTq6SVSMIVXBzZM?e=fGeJa8"
+          },
+          {
+            "titel": "Bingo",
+            "url": "https://stichtingvlietkinderenvb-my.sharepoint.com/:f:/g/personal/j_vanveen_vlietkinderen_nl/IgCiLcVwiw03R59ep9YKTIKyAdpBOyp6UUg1LSFCguk4bFk?e=sCkh3D"
+          },
+          {
+            "titel": "Even of Oneven",
+            "url": "https://stichtingvlietkinderenvb-my.sharepoint.com/:f:/g/personal/j_vanveen_vlietkinderen_nl/IgAPBcuQJmJWSppPqE3KECchARmPEOuNa2uVpFzTOkigl9Y?e=xZZozP"
+          }
+        ],
+        "activiteiten": [
+          "a1dc60e2d"
+        ]
       }
     ]
   },
@@ -15,9 +37,10 @@
     "beschrijving": "*Inleiding*\nVandaag ga je met de kinderen duo-trefbal spelen, een variant op het bekende trefbalspel waarbij ze niet alleen maar met zijn tweeën spelen. Elk kind vormt samen met een klasgenoot een duo en samen proberen ze andere duo's af te gooien. Leg uit dat het doel is om te leren samenwerken, tactisch na te denken en goed op elkaar af te stemmen. Vertel dat ze hun gooi- en vangvaardigheden gaan oefenen en ontdekken dat je samen sterker staat dan alleen.\n\n*Kern*\nVerdeel de groep in twee teams en geef elk team hesjes in dezelfde kleur. Laat de kinderen binnen hun team tweetallen vormen. Leg het speelveld uit met pylonen of lijnen: elk team heeft een eigen helft, met aan de achterkant van het veld van de tegenstander een gevangenis, aangegeven met pylonen of een bank. Leg de ballen op de middenlijn.\n\nLeg de spelregels uit. Duo's mogen alleen samen opereren op hun eigen helft. Als een speler door een bal wordt geraakt, zonder stuit en het hoofd telt niet mee, gaat die speler naar de gevangenis achter het veld van de tegenstander. De partner blijft in het veld en kan de gevangen speler vrijmaken door een bal te vangen. Wanneer een duo-lid een bal vangt, mag de gevangen partner terugkomen. Als beide spelers van een duo gevangen zijn, zijn ze uit het spel. Het team dat als eerste alle duo's van de tegenstander heeft uitgeschakeld, wint.\n\nStart het spel met een fluitsignaal. Begeleid de kinderen actief, moedig samenwerking aan en herinner ze eraan om met hun partner te overleggen. Wissel na een paar rondes de duo's, zodat iedereen met verschillende klasgenoten leert samenwerken.\n\nMaak het uitdagender door de duo's aan elkaar te koppelen met een springtouw of lint om hun middel, zodat ze echt samen moeten bewegen, ontwijken en gooien. Stel na afloop verrijkingsvragen, bijvoorbeeld wat er goed werkte in de samenwerking, wat ze de volgende keer anders zouden doen, en waarom je soms sterker bent als je samenwerkt dan wanneer je alleen speelt.\n\nBenodigd: zachte ballen, minimaal vier, pylonen of lijnen om het veld af te bakenen, hesjes in twee kleuren, een fluitje en eventueel een bank of lijn als gevangenis. Duur: 30 tot 45 minuten.\n\n*Slot*\nVerzamel de groep in een kring en bespreek kort hoe het ging. Vraag de kinderen wat ze hebben geleerd over samenwerken en wat ze lastig vonden. Laat een paar duo's vertellen wat hun tactiek was. Sluit af met een kort afscheidsspel waarbij de duo's elkaar een high five geven, bedank ze voor hun inzet en ruim samen het materiaal op.",
     "aangeleverdDoor": "Joris",
     "labels": [
-      "Sport",
+      "Sport & bewegen",
       "7-12 jaar"
-    ]
+    ],
+    "id": "a7b5a432a"
   },
   {
     "emoji": "🥅",
@@ -25,10 +48,11 @@
     "beschrijving": "*Inleiding*\nLeg de teams uit dat ze om beurten zullen spelen. Per ronde nemen twee tweetallen het tegen elkaar op. Vertel dat het doel is om de dweil of vaatdoek naar het doeltje van de tegenstander te bewegen. Als dat lukt, heb je gewonnen. Leg uit dat wanneer een punt wordt gescoord, de spelers die hebben verloren wisselen met het volgende tweetal.\n\n*Kern*\nLaat de eerste tweetallen zich opstellen bij hun doel. Speel de rondes achter elkaar af: wanneer een team scoort, moet het andere team wisselen met het volgende tweetal. Gebruik het fluitje om punten aan te geven en houd bij welk tweetal het langst in het spel blijft.\n\nBenodigd: een dweil of vaatdoek, een bezem, dweil of stok, twee doeltjes, bijvoorbeeld planken of matten, en een fluitje voor de spelleider. Duur: ongeveer 30 minuten.\n\n*Slot*\nVerzamel de groep en bespreek kort hoe de activiteit ging. Vraag wie het langst in het spel is gebleven en wat de tweetallen goed deden. Rond de activiteit gezamenlijk af.",
     "aangeleverdDoor": "Evelien",
     "labels": [
-      "Creatief",
-      "Sport",
+      "Creativiteit",
+      "Sport & bewegen",
       "7-12 jaar"
-    ]
+    ],
+    "id": "a119c05ab"
   },
   {
     "emoji": "🍳",
@@ -40,7 +64,8 @@
       "4-7 jaar",
       "7-12 jaar",
       "Koken"
-    ]
+    ],
+    "id": "ab580e8e7"
   },
   {
     "emoji": "🍣",
@@ -51,7 +76,8 @@
       "Koken",
       "4-7 jaar",
       "7-12 jaar"
-    ]
+    ],
+    "id": "a1f81e6b9"
   },
   {
     "emoji": "🧩",
@@ -59,10 +85,11 @@
     "beschrijving": "*Inleiding*\nVerdeel de kinderen in groepjes, afhankelijk van de grootte van de groep en de beschikbare foto's. Geef elk groepje een set foto's van henzelf, uitgeprint op A4-papier. Leg de foto's verspreid op tafels en geef de kinderen de opdracht om de foto's in elkaar te puzzelen en zo de originele foto te reconstrueren.\n\n*Kern*\nMoedig de kinderen aan om samen te werken, elkaar te helpen en te overleggen tijdens het puzzelen. Toon eventueel een voorbeeldpuzzel, zodat de kinderen een idee hebben van hoe de uiteindelijke foto eruit moet zien. Zorg voor een ontspannen en gezellige sfeer waarin de kinderen plezier kunnen hebben tijdens het puzzelen.\n\nBenodigd: foto's van de kinderen uitgeprint op A4-papier, in kleur of in zwart-wit als extra uitdaging. Als je niet precies weet welke kinderen die dag komen, kun je ook foto's van medewerkers gebruiken. Gebruik een snijmachine om de foto's te snijden. Duur: 20 tot 40 minuten.\n\n*Slot*\nLaat de kinderen als afsluiting hun gereconstrueerde foto's meenemen naar huis als aandenken aan deze activiteit.",
     "aangeleverdDoor": "Lotte",
     "labels": [
-      "Creatief",
+      "Creativiteit",
       "4-7 jaar",
       "7-12 jaar"
-    ]
+    ],
+    "id": "a3c792343"
   },
   {
     "emoji": "🌈",
@@ -70,10 +97,11 @@
     "beschrijving": "*Inleiding*\nVertel de kinderen over dromenvangers en hun oorsprong. Leg uit dat dromenvangers worden gebruikt om goede dromen te vangen en nare dromen weg te houden. Toon enkele voorbeelden om de kinderen te inspireren en vertel dat ze hun eigen dromenvanger gaan maken en die kunnen versieren zoals ze zelf willen.\n\nJe kunt de volgende verrijkingsvragen stellen: wat voor dromen denk je dat jouw dromenvanger zal vangen, kun je bedenken waar de traditie van dromenvangers vandaan komt, en welke kleuren gebruik je voor jouw dromenvanger en waarom.\n\n*Kern*\nGeef elk kind een metalen ring, cinildraad, kralen en veren. Laat de kinderen beginnen door het cinildraad om de metalen ring te draaien; dit vormt de basis van de dromenvanger en geeft een mooie, kleurrijke rand.\n\nLaat de kinderen daarna een stuk dunne draad kiezen en aan het begin een dikke knoop maken zodat de draad niet uit de ring glijdt. Laat ze de draad door en om de ring rijgen, met zoveel of zo weinig kralen als ze willen, en moedig ze aan om in het midden van de ring patronen te maken zodat de draden elkaar kruisen en een mooi web vormen.\n\nLaat de kinderen zodra het web klaar is veren vastmaken aan de onderkant van de dromenvanger voor een speels en traditioneel effect. Knoop tot slot het einde van de draad vast om alles op zijn plaats te houden.\n\nBenodigd: metalen ringen, cinildraad, scharen, draad, kralen, veren en kleurpotloden of stiften. Duur: 45 tot 60 minuten.\n\n*Slot*\nLaat de kinderen hun zelfgemaakte dromenvangers bewonderen en eventueel aan elkaar presenteren. Bespreek kort wat ze hebben geleerd over dromenvangers en waarom mensen ze denken te maken. De kinderen kunnen hun dromenvanger mee naar huis nemen en boven hun bed hangen om mooie dromen te vangen.",
     "aangeleverdDoor": "Tessa",
     "labels": [
-      "Creatief",
+      "Creativiteit",
       "4-7 jaar",
       "7-12 jaar"
-    ]
+    ],
+    "id": "aec086a4e"
   },
   {
     "emoji": "🎭",
@@ -83,7 +111,8 @@
     "labels": [
       "Drama",
       "7-12 jaar"
-    ]
+    ],
+    "id": "a637cf1b3"
   },
   {
     "emoji": "🌈",
@@ -91,8 +120,9 @@
     "beschrijving": "*Inleiding*\nLaat de kinderen de ijsklontjes zien en geef ze de tijd om het gek of spannend te vinden. Laat zien dat je door met een ijsklontje over papier te strijken ook kunt verven.\n\n*Kern*\nLaat de kinderen op hun eigen stuk papier verven met de gekleurde ijsklontjes. Een leuke en simpele opdracht is het maken van een regenboog. Gebruik eventueel ijsstokjes voor kinderen die het niet prettig vinden om rechtstreeks met een ijsklontje te verven, en houd er rekening mee dat het smeltende ijs voor een kliederboel kan zorgen.\n\nBereid van tevoren plakkaatverf gemengd met water in en vries dit in als ijsklontjes, in verschillende kleuren.\n\nBenodigd: plakkaatverf, een vriezer en papier, elk formaat is goed. Duur: ongeveer 30 minuten.\n\n*Slot*\nLaat de kinderen hun verfwerk bekijken en laten drogen. Bespreek kort welke kleuren ze hebben gebruikt en wat ze bijzonder vonden aan het verven met ijs in plaats van een kwast.",
     "aangeleverdDoor": "Freddie",
     "labels": [
-      "Creatief",
+      "Creativiteit",
       "0-4 jaar"
-    ]
+    ],
+    "id": "a1dc60e2d"
   }
 ]
