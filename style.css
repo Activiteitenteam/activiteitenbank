@@ -781,13 +781,17 @@ footer .admin-link:hover { opacity: 1; }
   outline-offset: 2px;
 }
 
-/* Teller schuift naar rechts, wisknop sluit erop aan */
+/* Teller loopt mee in de rij met labels; hij hoort bij de filters en is te
+   kort om er een eigen regel voor op te offeren. */
 .filter-telling {
-  margin-left: auto;
+  align-self: center;
+  margin-left: .25rem;
   font-size: .82rem;
   color: var(--zachter);
+  white-space: nowrap;
 }
 .filter-wissen {
+  align-self: center;
   font: inherit;
   font-size: .82rem;
   padding: 0;

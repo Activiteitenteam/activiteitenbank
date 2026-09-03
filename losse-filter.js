@@ -78,8 +78,8 @@
     wisKnop.hidden = gekozen.size === 0;
 
     telling.textContent = gekozen.size === 0
-      ? `${alles.length} activiteiten`
-      : `${zichtbaar.length} van ${alles.length} activiteiten`;
+      ? `(${alles.length} activiteiten)`
+      : `(${zichtbaar.length} van ${alles.length} activiteiten)`;
 
     // Labels die in combinatie met de huidige keuze niets zouden opleveren,
     // worden uitgeschakeld: dan klik je nooit een leeg scherm aan.
@@ -109,6 +109,10 @@
     gekozen.clear();
     werkBij();
   });
+
+  // Teller en wisknop achter de labels in dezelfde rij, in plaats van op een
+  // eigen regel eronder: dat kostte een hele regel voor een paar woorden.
+  labelVak.append(telling, wisKnop);
 
   balk.hidden = false;
   werkBij();
