@@ -30,8 +30,34 @@
     }
   }
 
-  toonSkelet(3);
+  // De vier richtingen reageren meteen, ook als de gegevens nog onderweg zijn:
+  // dan verschijnen eerst de lege kaartjes en vult de lijst zich daarna.
+  const keuzeVak = document.getElementById('keuze');
+  const terugKnop = document.getElementById('terug-naar-keuze');
+  let gereed = false;
+  let wachtendeKeuze = null;
+  let pasKeuzeToe = label => { wachtendeKeuze = label; };
+
+  keuzeVak.querySelectorAll('.keuze-knop').forEach(knop => {
+    knop.addEventListener('click', () => {
+      keuzeVak.hidden = true;
+      terugKnop.hidden = false;
+      lijst.hidden = false;
+      if (!gereed) toonSkelet(3);
+      pasKeuzeToe(knop.dataset.label);
+    });
+  });
+
+  terugKnop.addEventListener('click', () => {
+    keuzeVak.hidden = false;
+    terugKnop.hidden = true;
+    lijst.hidden = true;
+    balk.hidden = true;
+    geenGevond.hidden = true;
+  });
+
   const activiteiten = await laadActiviteiten();
+  gereed = true;
   lijst.innerHTML = '';
 
   // Het volgnummer van de activiteit in de volledige lijst moet bewaard
@@ -53,11 +79,6 @@
     ...AB_PRESET_LABELS,
     ...inGebruik.filter(l => !AB_PRESET_LABELS.includes(l)).sort((a, b) => a.localeCompare(b, 'nl'))
   ];
-
-  if (alleLabels.length === 0) {
-    tekenLijst(alles);
-    return;
-  }
 
   const past = item => [...gekozen].every(l => item.labels.includes(l));
 
@@ -114,6 +135,15 @@
   // eigen regel eronder: dat kostte een hele regel voor een paar woorden.
   labelVak.append(telling, wisKnop);
 
-  balk.hidden = false;
-  werkBij();
+  // De richting uit het keuzescherm zet gewoon het bijbehorende label aan;
+  // daarna kun je er in de filterbalk mee doen wat je wilt.
+  pasKeuzeToe = label => {
+    gekozen.clear();
+    if (label && alleLabels.includes(label)) gekozen.add(label);
+    balk.hidden = false;
+    lijst.hidden = false;
+    werkBij();
+  };
+
+  if (wachtendeKeuze !== null) pasKeuzeToe(wachtendeKeuze);
 })();

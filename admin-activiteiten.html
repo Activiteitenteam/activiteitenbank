@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Activiteiten beheren - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=28">
-<link rel="icon" href="Assets/favicon.svg?v=28" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=28" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=28">
+<link rel="stylesheet" href="style.css?v=30">
+<link rel="icon" href="Assets/favicon.svg?v=30" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=30" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=30">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -137,7 +137,7 @@
 <footer>
   <div class="footer-inner">
     <div class="endorser">
-      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=28"
+      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=30"
            alt="Vlietkinderen" width="640" height="87">
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl &middot; <a class="admin-link" href="admin.html">Admin login</a></p>
@@ -149,10 +149,10 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="admin-auth.js?v=28"></script>
-<script src="data.js?v=28"></script>
-<script src="activiteit-format.js?v=28"></script>
-<script src="ai-prompt.js?v=28"></script>
+<script src="admin-auth.js?v=30"></script>
+<script src="data.js?v=30"></script>
+<script src="activiteit-format.js?v=30"></script>
+<script src="ai-prompt.js?v=30"></script>
 <script>
   // Inloggen en het sessie-token komen uit admin-auth.js
   const dashboard = document.getElementById('dashboard');
@@ -501,7 +501,7 @@
 
   // ── Vernieuwen (haalt de actuele lijst opnieuw op bij de backend) ──
   document.getElementById('herstel-knop').addEventListener('click', async () => {
-    activiteiten = await laadActiviteiten();
+    activiteiten = await laadActiviteitenVers();
     stopBewerken();
     tekenLijst();
   });
@@ -608,11 +608,11 @@
   (async () => {
     if (!await vereisLogin()) return;
     dashboard.hidden = false;
-    activiteiten = await laadActiviteiten();
+    activiteiten = await laadActiviteitenVers();
     tekenLijst();
   })();
 </script>
-<script src="hero.js?v=28"></script>
-<script src="thema.js?v=28"></script>
+<script src="hero.js?v=30"></script>
+<script src="thema.js?v=30"></script>
 </body>
 </html>

@@ -1527,3 +1527,67 @@ footer .admin-link:hover { opacity: 1; }
   border-color: var(--geel);
   color: #33302a;
 }
+
+/* ── Keuzescherm op de pagina met losse activiteiten ── */
+.keuze { padding: .5rem 0 1rem; }
+.keuze-kop {
+  font-size: 1.35rem;
+  color: var(--donkergroen);
+  margin-bottom: .25rem;
+}
+.keuze-uitleg {
+  color: var(--zacht);
+  font-size: .95rem;
+  margin-bottom: 1.5rem;
+}
+.keuze-knoppen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.keuze-knop {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .6rem;
+  font: inherit;
+  text-align: left;
+  padding: 1.4rem 1.5rem;
+  border: 0;
+  border-top: 6px solid var(--groen);
+  border-radius: 16px;
+  background: var(--oppervlak);
+  color: var(--tekst);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .07);
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+.keuze-knop:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .12);
+}
+.keuze-knop:focus-visible { outline: 3px solid var(--blauw); outline-offset: 3px; }
+.keuze-emoji { font-size: 1.9rem; line-height: 1; }
+.keuze-naam { font-weight: 700; font-size: 1.05rem; }
+
+.keuze-creatief { border-top-color: var(--paars); }
+.keuze-sport    { border-top-color: var(--groen); }
+.keuze-koken    { border-top-color: var(--oranje); }
+.keuze-meer     { border-top-color: var(--blauw); }
+
+:root[data-thema="donker"] .keuze-knop {
+  box-shadow: 0 0 0 1px var(--rand), 0 3px 10px rgba(0, 0, 0, .35);
+}
+
+.terug-naar-keuze {
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: 1rem;
+  border: 0;
+  background: none;
+  color: var(--blauw);
+  cursor: pointer;
+}
+.terug-naar-keuze:hover { text-decoration: underline; }

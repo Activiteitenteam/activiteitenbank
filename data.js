@@ -334,14 +334,58 @@ function zoekbareTekstVan(activiteit) {
 
 // Haalt de actuele activiteiten op bij de backend. Let op: dit is nu een
 // async functie (geeft een Promise terug), dus gebruik 'await laadActiviteiten()'.
+// Het bestand staat ook gewoon op GitHub Pages. Voor bezoekers is dat de
+// snelste weg: de backend op Render slaapt op het gratis plan in en heeft dan
+// tientallen seconden nodig om op te starten, terwijl Pages meteen antwoordt.
+// De teller schuift elke 30 seconden op, zodat de CDN niet een oude kopie
+// blijft uitserveren maar bezoekers binnen datzelfde halve minuutje wel
+// dezelfde gecachete versie krijgen.
+function statischeUrl() {
+  return AB_ACTIVITEITEN_PAD + '?v=' + Math.floor(Date.now() / 30000);
+}
+
+async function haalStatisch() {
+  const respons = await fetch(statischeUrl(), { cache: 'no-store' });
+  if (!respons.ok) throw new Error('Bestand gaf status ' + respons.status);
+  return await respons.json();
+}
+
+async function haalViaBackend() {
+  const respons = await fetch(AB_BACKEND_URL + '/api/activiteiten');
+  if (!respons.ok) throw new Error('Backend gaf een foutstatus terug');
+  return await respons.json();
+}
+
+// Voor bezoekers: eerst het statische bestand, en pas de backend als dat
+// mislukt (bijvoorbeeld doordat het pad ooit verhuist).
 async function laadActiviteiten() {
   try {
-    const respons = await fetch(AB_BACKEND_URL + '/api/activiteiten');
-    if (!respons.ok) throw new Error('Backend gaf een foutstatus terug');
-    return scheidInstellingen(await respons.json());
-  } catch (e) {
-    console.warn('Kon activiteiten niet ophalen bij de backend, val terug op standaardlijst.', e);
-    return normaliseerActiviteiten(STANDAARD_ACTIVITEITEN.map(a => ({ ...a })));
+    return scheidInstellingen(await haalStatisch());
+  } catch (eersteFout) {
+    console.warn('Statisch bestand niet gelukt, probeer de backend.', eersteFout);
+    try {
+      return scheidInstellingen(await haalViaBackend());
+    } catch (e) {
+      console.warn('Kon activiteiten nergens ophalen, val terug op standaardlijst.', e);
+      return normaliseerActiviteiten(STANDAARD_ACTIVITEITEN.map(a => ({ ...a })));
+    }
+  }
+}
+
+// Voor het adminscherm: daar moet je na het opslaan meteen je eigen wijziging
+// terugzien, en het statische bestand loopt een minuut achter omdat Pages
+// eerst opnieuw moet publiceren.
+async function laadActiviteitenVers() {
+  try {
+    return scheidInstellingen(await haalViaBackend());
+  } catch (eersteFout) {
+    console.warn('Backend niet bereikbaar, val terug op het statische bestand.', eersteFout);
+    try {
+      return scheidInstellingen(await haalStatisch());
+    } catch (e) {
+      console.warn('Kon activiteiten nergens ophalen, val terug op standaardlijst.', e);
+      return normaliseerActiviteiten(STANDAARD_ACTIVITEITEN.map(a => ({ ...a })));
+    }
   }
 }
 

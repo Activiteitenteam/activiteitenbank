@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Losse activiteiten - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=28">
-<link rel="icon" href="Assets/favicon.svg?v=28" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=28" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=28">
+<link rel="stylesheet" href="style.css?v=30">
+<link rel="icon" href="Assets/favicon.svg?v=30" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=30" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=30">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -16,7 +16,7 @@
     if (bewaardThema === 'donker') document.documentElement.dataset.thema = 'donker';
   } catch (e) {}
 </script>
-<script src="onderhoudmodus.js?v=28"></script>
+<script src="onderhoudmodus.js?v=30"></script>
 </head>
 <body>
 
@@ -44,26 +44,51 @@
 </div>
 
 <section class="blok titel-losse">
+  <div class="keuze" id="keuze">
+    <h2 class="keuze-kop">Waar ben je naar op zoek?</h2>
+    <p class="keuze-uitleg">Kies een richting, of bekijk meteen alles. Je kunt daarna nog filteren.</p>
+    <div class="keuze-knoppen">
+      <button type="button" class="keuze-knop keuze-creatief" data-label="Creativiteit">
+        <span class="keuze-emoji" aria-hidden="true">🎨</span>
+        <span class="keuze-naam">Knutselactiviteiten</span>
+      </button>
+      <button type="button" class="keuze-knop keuze-sport" data-label="Sport &amp; bewegen">
+        <span class="keuze-emoji" aria-hidden="true">⚽</span>
+        <span class="keuze-naam">Sportactiviteiten</span>
+      </button>
+      <button type="button" class="keuze-knop keuze-koken" data-label="Koken">
+        <span class="keuze-emoji" aria-hidden="true">🍳</span>
+        <span class="keuze-naam">Kookactiviteiten</span>
+      </button>
+      <button type="button" class="keuze-knop keuze-meer" data-label="">
+        <span class="keuze-emoji" aria-hidden="true">📚</span>
+        <span class="keuze-naam">Meer</span>
+      </button>
+    </div>
+  </div>
+
+  <button type="button" class="terug-naar-keuze" id="terug-naar-keuze" hidden>&larr; Andere richting kiezen</button>
+
   <div class="filterbalk" id="filterbalk" hidden>
     <div class="filter-labels" id="filter-labels" role="group" aria-label="Filteren op label"></div>
     <p class="filter-telling" id="filter-telling" aria-live="polite"></p>
     <button type="button" class="filter-wissen" id="filter-wissen" hidden>Wissen</button>
   </div>
 
-  <div class="items" id="activiteiten-lijst"></div>
+  <div class="items" id="activiteiten-lijst" hidden></div>
 
   <p class="geen-resultaat" id="geen-resultaat" hidden>
     Geen activiteiten met deze combinatie van labels. Zet er een uit om meer te zien.
   </p>
 </section>
 
-<script src="data.js?v=28"></script>
-<script src="losse-filter.js?v=28"></script>
+<script src="data.js?v=30"></script>
+<script src="losse-filter.js?v=30"></script>
 
 <footer>
   <div class="footer-inner">
     <div class="endorser">
-      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=28"
+      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=30"
            alt="Vlietkinderen" width="640" height="87">
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl &middot; <a class="admin-link" href="admin.html">Admin login</a></p>
@@ -74,7 +99,7 @@
   </div>
 </footer>
 
-<script src="hero.js?v=28"></script>
-<script src="thema.js?v=28"></script>
+<script src="hero.js?v=30"></script>
+<script src="thema.js?v=30"></script>
 </body>
 </html>
