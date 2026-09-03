@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thema's beheren - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=19">
-<link rel="icon" href="Assets/favicon.svg?v=19" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=19" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=19">
+<link rel="stylesheet" href="style.css?v=20">
+<link rel="icon" href="Assets/favicon.svg?v=20" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=20" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=20">
 <script>
   // Thema toepassen voor het tekenen, anders flitst de lichte versie door.
   try {
@@ -101,7 +101,7 @@
 <footer>
   <div class="footer-inner">
     <div class="endorser">
-      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=19"
+      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=20"
            alt="Vlietkinderen" width="640" height="87">
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl</p>
@@ -113,9 +113,9 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="admin-auth.js?v=19"></script>
-<script src="data.js?v=19"></script>
-<script src="admin-lijstbeheer.js?v=19"></script>
+<script src="admin-auth.js?v=20"></script>
+<script src="data.js?v=20"></script>
+<script src="admin-lijstbeheer.js?v=20"></script>
 <script>
   (async () => {
     if (!await vereisLogin()) return;
@@ -192,8 +192,9 @@
         chip.className = 'chip';
         const vinkje = document.createElement('input');
         vinkje.type = 'checkbox';
-        vinkje.value = a.titel;
-        vinkje.checked = gekozenTitels.includes(a.titel);
+        // Op het vaste nummer, niet op titel: hernoemen breekt de koppeling dan niet
+        vinkje.value = a.id;
+        vinkje.checked = gekozenTitels.includes(a.id) || gekozenTitels.includes(a.titel);
         const naam = document.createElement('span');
         naam.textContent = (a.emoji ? a.emoji + ' ' : '') + a.titel;
         chip.append(vinkje, naam);
@@ -291,6 +292,6 @@
       themasLijst().length + " thema's";
   })();
 </script>
-<script src="thema.js?v=19"></script>
+<script src="thema.js?v=20"></script>
 </body>
 </html>

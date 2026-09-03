@@ -23,6 +23,7 @@ import argparse
 import json
 import os
 import re
+import struct
 import sys
 import urllib.error
 import urllib.request
@@ -35,6 +36,17 @@ VELDEN = [
     "Aangeleverd door", "Voorgestelde emoji",
     "Voorgestelde categorie", "Voorgestelde leeftijd",
 ]
+
+
+def id_uit_titel(titel):
+    """Zelfde berekening als in data.js (FNV-1a over UTF-16-eenheden), zodat
+    browser en script hetzelfde nummer voor dezelfde titel uitrekenen."""
+    h = 0x811C9DC5
+    for eenheid in struct.unpack("<%dH" % (len(titel.encode("utf-16-le")) // 2),
+                                 titel.encode("utf-16-le")):
+        h ^= eenheid
+        h = (h * 0x01000193) & 0xFFFFFFFF
+    return "a" + format(h, "08x")
 
 
 class Fout(Exception):
@@ -203,6 +215,9 @@ def parseer(tekst, cfg):
         return None, fouten
 
     return {
+        # Vast nummer, zodat gedeelde links en themakoppelingen blijven kloppen
+        # als de lijst later verandert.
+        "id": id_uit_titel(titel),
         "emoji": emoji,
         "titel": titel,
         "beschrijving": "\n\n".join(delen),

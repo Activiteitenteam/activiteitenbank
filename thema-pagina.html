@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thema - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=19">
-<link rel="icon" href="Assets/favicon.svg?v=19" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=19" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=19">
+<link rel="stylesheet" href="style.css?v=20">
+<link rel="icon" href="Assets/favicon.svg?v=20" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=20" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=20">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -16,7 +16,7 @@
     if (bewaardThema === 'donker') document.documentElement.dataset.thema = 'donker';
   } catch (e) {}
 </script>
-<script src="onderhoudmodus.js?v=19"></script>
+<script src="onderhoudmodus.js?v=20"></script>
 </head>
 <body>
 
@@ -65,7 +65,7 @@
 <footer>
   <div class="footer-inner">
     <div class="endorser">
-      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=19"
+      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=20"
            alt="Vlietkinderen" width="640" height="87">
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl &middot; <a class="admin-link" href="admin.html">Admin login</a></p>
@@ -76,8 +76,8 @@
   </div>
 </footer>
 
-<script src="data.js?v=19"></script>
-<script src="themas.js?v=19"></script>
+<script src="data.js?v=20"></script>
+<script src="themas.js?v=20"></script>
 <script>
   (async () => {
   const nr = Number(new URLSearchParams(location.search).get('nr'));
@@ -144,11 +144,13 @@
       vak.append(p, a);
     }
 
-    // De koppeling gaat op titel, want activiteiten hebben geen vast nummer.
-    // Is een activiteit hernoemd of weg, dan slaan we hem hier over.
+    // De koppeling gaat op het vaste nummer van een activiteit. Is er eentje
+    // verwijderd, dan slaan we die hier over.
     const gekoppeld = (thema.activiteiten || [])
-      .map(titel => {
-        const nr = alleActiviteiten.findIndex(a => a.titel === titel);
+      .map(verwijzing => {
+        // Op nummer; oudere koppelingen die nog op titel staan blijven werken
+        const nr = alleActiviteiten.findIndex(
+          a => a.id === verwijzing || a.titel === verwijzing);
         return nr === -1 ? null : { activiteit: alleActiviteiten[nr], nr };
       })
       .filter(Boolean);
@@ -168,7 +170,7 @@
   }
   })();
 </script>
-<script src="hero.js?v=19"></script>
-<script src="thema.js?v=19"></script>
+<script src="hero.js?v=20"></script>
+<script src="thema.js?v=20"></script>
 </body>
 </html>

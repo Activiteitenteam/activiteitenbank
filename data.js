@@ -75,6 +75,36 @@ function hernoemLabels(activiteit) {
   return activiteit;
 }
 
+// Elke activiteit krijgt een vast nummer, dat bij het inlezen wordt toegekend
+// als het er nog niet is en bij de eerstvolgende opslag wordt vastgelegd.
+// Zonder zo'n nummer werkt alles op de plek in de lijst, en dan wijst een
+// eerder gedeelde link naar een andere activiteit zodra er eentje tussenuit
+// gaat. Ook de koppeling met thema's zou dan losraken.
+// Het nummer wordt berekend uit de titel (FNV-1a). Dat moet, want tot de
+// eerstvolgende opslag staat het nog nergens vast: met een willekeurig nummer
+// zou elke bezoeker een ander nummer berekenen en zou een gedeelde link bij
+// een collega niets vinden. Zodra het is opgeslagen ligt het vast en mag de
+// titel veranderen.
+function idUitTitel(titel) {
+  let h = 0x811c9dc5;
+  const tekst = String(titel || '');
+  for (let i = 0; i < tekst.length; i++) {
+    h ^= tekst.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return 'a' + h.toString(16).padStart(8, '0');
+}
+
+function nieuwActiviteitId(titel, bezet) {
+  const basis = idUitTitel(titel);
+  let id = basis;
+  let tel = 1;
+  // Twee activiteiten met dezelfde titel zouden hetzelfde nummer krijgen
+  while (bezet && bezet.has(id)) id = basis + '-' + (++tel);
+  if (bezet) bezet.add(id);
+  return id;
+}
+
 // Wordt alleen gebruikt als de backend even niet bereikbaar is
 // (bijvoorbeeld tijdens het opstarten na een periode van inactiviteit).
 const STANDAARD_ACTIVITEITEN = [
@@ -206,7 +236,37 @@ function scheidInstellingen(rauw) {
   const themas = regel(AB_INSTELLING_THEMAS);
   AB_THEMAS_OPSLAG = themas && Array.isArray(themas.items) ? themas.items : null;
 
-  return rauw.filter(i => !isInstelling(i)).map(hernoemLabels);
+  const lijst = normaliseerActiviteiten(rauw.filter(i => !isInstelling(i)));
+
+  // Thema's koppelden eerder op titel. Die verwijzingen worden hier omgezet
+  // naar het vaste nummer, zodat hernoemen de koppeling niet meer breekt.
+  if (AB_THEMAS_OPSLAG) {
+    AB_THEMAS_OPSLAG.forEach(thema => {
+      if (!Array.isArray(thema.activiteiten)) return;
+      thema.activiteiten = thema.activiteiten.map(verwijzing => {
+        if (lijst.some(a => a.id === verwijzing)) return verwijzing;
+        const opTitel = lijst.find(a => a.titel === verwijzing);
+        return opTitel ? opTitel.id : verwijzing;
+      });
+    });
+  }
+
+  return lijst;
+}
+
+// Zet labels om naar hun huidige naam en zorgt dat elke activiteit een
+// nummer heeft. Ook de terugvallijst gaat hier langs: zonder dat zouden
+// links stuk zijn zodra de backend even niet antwoordt.
+function normaliseerActiviteiten(lijst) {
+  const schoon = lijst.map(hernoemLabels);
+  const bezet = new Set(schoon.map(a => a.id).filter(Boolean));
+  schoon.forEach(a => { if (!a.id) a.id = nieuwActiviteitId(a.titel, bezet); });
+  return schoon;
+}
+
+// Zoekt een activiteit op haar vaste nummer
+function activiteitMetId(lijst, id) {
+  return lijst.find(a => a.id === id) || null;
 }
 
 // De opgeslagen lijst, of de standaardlijst zolang er nog niets is opgeslagen
@@ -243,7 +303,7 @@ async function laadActiviteiten() {
     return scheidInstellingen(await respons.json());
   } catch (e) {
     console.warn('Kon activiteiten niet ophalen bij de backend, val terug op standaardlijst.', e);
-    return STANDAARD_ACTIVITEITEN.map(a => ({ ...a }));
+    return normaliseerActiviteiten(STANDAARD_ACTIVITEITEN.map(a => ({ ...a })));
   }
 }
 
@@ -300,7 +360,11 @@ function samenvattingVan(activiteit) {
 function maakActiviteitKaart(activiteit, index) {
   const kaart = document.createElement('a');
   kaart.className = 'item';
-  kaart.href = 'activiteit.html?nr=' + index;
+  // Op nummer, zodat de link blijft kloppen als de lijst verandert. Alleen
+  // als een activiteit nog geen nummer heeft valt hij terug op de plek.
+  kaart.href = activiteit.id
+    ? 'activiteit.html?id=' + encodeURIComponent(activiteit.id)
+    : 'activiteit.html?nr=' + index;
 
   const titel = document.createElement('h3');
   titel.textContent = (activiteit.emoji ? activiteit.emoji + ' ' : '') + activiteit.titel;
