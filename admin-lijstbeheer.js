@@ -20,6 +20,9 @@ function beheerLijstje(cfg) {
   function leegForm() {
     bewerkt = null;
     cfg.velden.forEach(v => { invoer[v].value = ''; });
+    // Een soort kan eigen velden hebben die niet uit losse tekstvakjes
+    // bestaan, zoals een rijtje links of een keuzelijst.
+    if (cfg.leegExtra) cfg.leegExtra();
     formKop.textContent = cfg.nieuwKop;
     opslaan.textContent = 'Toevoegen';
     annuleer.hidden = true;
@@ -32,6 +35,7 @@ function beheerLijstje(cfg) {
       const waarde = item[cfg.veldSleutel ? cfg.veldSleutel(v) : v];
       invoer[v].value = waarde == null ? '' : String(waarde);
     });
+    if (cfg.vulExtra) cfg.vulExtra(item);
     formKop.textContent = cfg.bewerkKop;
     opslaan.textContent = 'Opslaan';
     annuleer.hidden = false;

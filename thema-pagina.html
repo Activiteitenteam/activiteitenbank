@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thema - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=18">
-<link rel="icon" href="Assets/favicon.svg?v=18" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=18" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=18">
+<link rel="stylesheet" href="style.css?v=19">
+<link rel="icon" href="Assets/favicon.svg?v=19" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=19" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=19">
 <script>
   // Thema toepassen vóór het tekenen, anders flitst de lichte versie door.
   // Zonder eerdere keuze blijft de site licht; de schakelaar in de footer beslist.
@@ -16,7 +16,7 @@
     if (bewaardThema === 'donker') document.documentElement.dataset.thema = 'donker';
   } catch (e) {}
 </script>
-<script src="onderhoudmodus.js?v=18"></script>
+<script src="onderhoudmodus.js?v=19"></script>
 </head>
 <body>
 
@@ -46,6 +46,7 @@
 <section class="blok titel-thema">
   <a class="terug-link" href="thema-paginas.html">&larr; Terug naar de thema pagina's</a>
   <div class="detail-kaart detail-thema" id="thema-kaart">
+    <div id="thema-inhoud"></div>
     <div class="komt-nog" id="thema-komt-nog">
       <span class="komt-nog-emoji" role="img" aria-label="In aanbouw">🚧</span>
       <h2>Deze themapagina komt nog</h2>
@@ -64,7 +65,7 @@
 <footer>
   <div class="footer-inner">
     <div class="endorser">
-      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=18"
+      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=19"
            alt="Vlietkinderen" width="640" height="87">
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl &middot; <a class="admin-link" href="admin.html">Admin login</a></p>
@@ -75,8 +76,8 @@
   </div>
 </footer>
 
-<script src="data.js?v=18"></script>
-<script src="themas.js?v=18"></script>
+<script src="data.js?v=19"></script>
+<script src="themas.js?v=19"></script>
 <script>
   (async () => {
   const nr = Number(new URLSearchParams(location.search).get('nr'));
@@ -91,11 +92,83 @@
   } else {
     document.title = gekozenThema.titel + ' - Activiteitenbank.nl';
     document.getElementById('thema-titel').textContent = gekozenThema.titel;
-    document.getElementById('thema-tekst').textContent = gekozenThema.samenvatting;
+    document.getElementById('thema-tekst').textContent = gekozenThema.samenvatting || '';
+    toonThemaInhoud(gekozenThema, await laadActiviteiten());
+  }
+
+  // Een thema heeft drie onderdelen: de boekjes, een link naar de generieke
+  // activiteiten, en de losse activiteiten die eraan gekoppeld zijn. Is er
+  // nog niets ingevuld, dan blijft de melding staan dat het nog komt.
+  function toonThemaInhoud(thema, alleActiviteiten) {
+    const vak = document.getElementById('thema-inhoud');
+    let iets = false;
+
+    const kop = tekst => {
+      const h = document.createElement('h2');
+      h.className = 'thema-kop';
+      h.textContent = tekst;
+      return h;
+    };
+
+    const boekjes = (thema.boekjes || []).filter(b => b && b.url);
+    if (boekjes.length) {
+      iets = true;
+      vak.append(kop(boekjes.length === 1 ? 'Boekje' : 'Boekjes'));
+      const lijst = document.createElement('ul');
+      lijst.className = 'thema-links';
+      boekjes.forEach(b => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = b.url;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = b.titel || b.url;
+        li.append(a);
+        lijst.append(li);
+      });
+      vak.append(lijst);
+    }
+
+    if (thema.generiek && thema.generiek.url) {
+      iets = true;
+      vak.append(kop('Generieke activiteiten'));
+      const p = document.createElement('p');
+      p.className = 'thema-uitleg';
+      p.textContent = 'Activiteiten die altijd bij dit thema passen.';
+      const a = document.createElement('a');
+      a.className = 'thema-link';
+      a.href = thema.generiek.url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = thema.generiek.titel || thema.generiek.url;
+      vak.append(p, a);
+    }
+
+    // De koppeling gaat op titel, want activiteiten hebben geen vast nummer.
+    // Is een activiteit hernoemd of weg, dan slaan we hem hier over.
+    const gekoppeld = (thema.activiteiten || [])
+      .map(titel => {
+        const nr = alleActiviteiten.findIndex(a => a.titel === titel);
+        return nr === -1 ? null : { activiteit: alleActiviteiten[nr], nr };
+      })
+      .filter(Boolean);
+
+    if (gekoppeld.length) {
+      iets = true;
+      vak.append(kop('Activiteiten in dit thema'));
+      const rooster = document.createElement('div');
+      rooster.className = 'items';
+      gekoppeld.forEach(({ activiteit, nr }) => {
+        rooster.append(maakActiviteitKaart(activiteit, nr));
+      });
+      vak.append(rooster);
+    }
+
+    document.getElementById('thema-komt-nog').hidden = iets;
   }
   })();
 </script>
-<script src="hero.js?v=18"></script>
-<script src="thema.js?v=18"></script>
+<script src="hero.js?v=19"></script>
+<script src="thema.js?v=19"></script>
 </body>
 </html>

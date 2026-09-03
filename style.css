@@ -1427,3 +1427,55 @@ footer .admin-link:hover { opacity: 1; }
   color: var(--donkergroen);
 }
 .workshop-gegevens a { color: var(--blauw); }
+
+/* ── Themapagina: boekjes, generieke link en gekoppelde activiteiten ── */
+.thema-kop {
+  font-size: 1.15rem;
+  color: var(--paars);
+  margin: 1.75rem 0 .5rem;
+}
+.thema-kop:first-child { margin-top: 0; }
+.thema-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.thema-links li { padding: .35rem 0; }
+.thema-links a,
+.thema-link {
+  color: var(--blauw);
+  font-weight: 700;
+}
+.thema-uitleg {
+  font-size: .92rem;
+  color: var(--zacht);
+  margin-bottom: .35rem;
+}
+#thema-inhoud .items { margin-top: .75rem; }
+
+/* ── Themabeheer in het adminscherm ── */
+.veld-uitleg {
+  font-size: .82rem;
+  color: var(--zachter);
+  margin: -.15rem 0 .45rem;
+}
+.link-rij {
+  display: flex;
+  gap: .5rem;
+  margin-bottom: .5rem;
+}
+.link-rij .link-titel { flex: 1 1 40%; }
+.link-rij .link-url   { flex: 1 1 60%; }
+.link-rij .knop { flex: none; align-self: stretch; }
+
+/* Vaste hoogte met eigen scrollbalk: het formulier groeit niet mee met het
+   aantal activiteiten in de bank. */
+.thema-activiteiten {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  max-height: 11rem;
+  overflow-y: auto;
+  margin-top: .5rem;
+  padding: .1rem;
+}

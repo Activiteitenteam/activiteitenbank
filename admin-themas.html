@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thema's beheren - Activiteitenbank.nl</title>
-<link rel="stylesheet" href="style.css?v=18">
-<link rel="icon" href="Assets/favicon.svg?v=18" type="image/svg+xml">
-<link rel="alternate icon" href="Assets/favicon.ico?v=18" sizes="32x32">
-<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=18">
+<link rel="stylesheet" href="style.css?v=19">
+<link rel="icon" href="Assets/favicon.svg?v=19" type="image/svg+xml">
+<link rel="alternate icon" href="Assets/favicon.ico?v=19" sizes="32x32">
+<link rel="apple-touch-icon" href="Assets/favicon-180.png?v=19">
 <script>
   // Thema toepassen voor het tekenen, anders flitst de lichte versie door.
   try {
@@ -52,7 +52,8 @@
     <div class="werkblad-editor">
       <div class="beheer-paneel">
         <form class="formulier" id="th-form">
-          <h3 id="th-formtitel">Nieuw item</h3>
+          <h3 id="th-formtitel">Nieuw thema</h3>
+
           <div class="veld-groep">
             <label for="th-titel">Titel</label>
             <input type="text" id="th-titel" placeholder="Bijv. Zomer &amp; water" required>
@@ -65,6 +66,28 @@
             <label for="th-aantal">Aantal activiteiten</label>
             <input type="text" id="th-aantal" placeholder="Laat leeg als je het nog niet weet">
           </div>
+
+          <div class="veld-groep">
+            <label id="boekjes-kop">Boekjes</label>
+            <p class="veld-uitleg">Links naar de themaboekjes. Je kunt er meerdere kwijt.</p>
+            <div id="th-boekjes" aria-labelledby="boekjes-kop"></div>
+            <button type="button" class="knop knop-secundair knop-klein" id="th-boekje-erbij">+ Boekje</button>
+          </div>
+
+          <div class="veld-groep">
+            <label for="th-generiek-url">Generieke activiteiten</label>
+            <p class="veld-uitleg">Link naar de activiteiten die altijd bij dit thema passen.</p>
+            <input type="text" id="th-generiek-titel" placeholder="Omschrijving van de link">
+            <input type="url" id="th-generiek-url" placeholder="https://...">
+          </div>
+
+          <div class="veld-groep">
+            <label id="th-act-kop">Losse activiteiten in dit thema</label>
+            <p class="veld-uitleg">Vink aan welke activiteiten uit de bank bij dit thema horen.</p>
+            <input type="search" class="werkbalk-zoek" id="th-act-zoek" placeholder="Zoeken in activiteiten">
+            <div class="thema-activiteiten" id="th-activiteiten" aria-labelledby="th-act-kop"></div>
+          </div>
+
           <div class="form-knoppen">
             <button type="button" class="knop knop-secundair" id="th-annuleer" hidden>Annuleren</button>
             <button type="submit" class="knop" id="th-opslaan">Toevoegen</button>
@@ -78,7 +101,7 @@
 <footer>
   <div class="footer-inner">
     <div class="endorser">
-      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=18"
+      <img class="endorser-logo" src="Assets/vlietkinderen-wit.png?v=19"
            alt="Vlietkinderen" width="640" height="87">
     </div>
     <p class="copy">&copy; 2026 Activiteitenbank.nl</p>
@@ -90,9 +113,9 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="admin-auth.js?v=18"></script>
-<script src="data.js?v=18"></script>
-<script src="admin-lijstbeheer.js?v=18"></script>
+<script src="admin-auth.js?v=19"></script>
+<script src="data.js?v=19"></script>
+<script src="admin-lijstbeheer.js?v=19"></script>
 <script>
   (async () => {
     if (!await vereisLogin()) return;
@@ -100,6 +123,98 @@
 
     let activiteiten = await laadActiviteiten();
     document.getElementById('werkblad').hidden = false;
+
+    // ── Boekjes: een rijtje links dat kan groeien en krimpen ──
+    const boekjesVak = document.getElementById('th-boekjes');
+
+    function boekjeRij(boekje) {
+      const rij = document.createElement('div');
+      rij.className = 'link-rij';
+
+      const titel = document.createElement('input');
+      titel.type = 'text';
+      titel.className = 'link-titel';
+      titel.placeholder = 'Naam van het boekje';
+      titel.value = (boekje && boekje.titel) || '';
+
+      const url = document.createElement('input');
+      url.type = 'url';
+      url.className = 'link-url';
+      url.placeholder = 'https://...';
+      url.value = (boekje && boekje.url) || '';
+
+      const weg = document.createElement('button');
+      weg.type = 'button';
+      weg.className = 'knop knop-gevaar knop-klein';
+      weg.textContent = 'Weg';
+      weg.addEventListener('click', () => rij.remove());
+
+      rij.append(titel, url, weg);
+      boekjesVak.append(rij);
+      return rij;
+    }
+
+    document.getElementById('th-boekje-erbij').addEventListener('click', () => {
+      boekjeRij().querySelector('.link-titel').focus();
+    });
+
+    function leesBoekjes() {
+      return [...boekjesVak.querySelectorAll('.link-rij')]
+        .map(rij => ({
+          titel: rij.querySelector('.link-titel').value.trim(),
+          url: rij.querySelector('.link-url').value.trim()
+        }))
+        // Een rij zonder adres heeft geen zin; die laten we weg
+        .filter(b => b.url);
+    }
+
+    // ── Activiteiten aanvinken ──
+    const actVak = document.getElementById('th-activiteiten');
+    const actZoek = document.getElementById('th-act-zoek');
+
+    function tekenActiviteiten(gekozenTitels) {
+      const zoek = actZoek.value.trim().toLowerCase();
+      actVak.innerHTML = '';
+
+      const passend = activiteiten.filter(a =>
+        !zoek || (a.titel || '').toLowerCase().includes(zoek));
+
+      if (passend.length === 0) {
+        const leeg = document.createElement('p');
+        leeg.className = 'extra-leeg';
+        leeg.textContent = 'Geen activiteiten gevonden.';
+        actVak.append(leeg);
+        return;
+      }
+
+      passend.forEach(a => {
+        const chip = document.createElement('label');
+        chip.className = 'chip';
+        const vinkje = document.createElement('input');
+        vinkje.type = 'checkbox';
+        vinkje.value = a.titel;
+        vinkje.checked = gekozenTitels.includes(a.titel);
+        const naam = document.createElement('span');
+        naam.textContent = (a.emoji ? a.emoji + ' ' : '') + a.titel;
+        chip.append(vinkje, naam);
+        actVak.append(chip);
+      });
+    }
+
+    function gekozenActiviteiten() {
+      return [...actVak.querySelectorAll('input:checked')].map(i => i.value);
+    }
+
+    // Zoeken mag de aangevinkte activiteiten niet vergeten, ook niet als ze
+    // door de zoekterm even uit beeld vallen.
+    let gekozenNu = [];
+    actZoek.addEventListener('input', () => {
+      gekozenNu = [...new Set([...gekozenNu.filter(t => !zichtbaar(t)), ...gekozenActiviteiten()])];
+      tekenActiviteiten(gekozenNu);
+    });
+    function zichtbaar(titel) {
+      return [...actVak.querySelectorAll('input')].some(i => i.value === titel);
+    }
 
     const beheer = beheerLijstje({
       sleutel: 'th',
@@ -111,23 +226,71 @@
       activiteiten: () => activiteiten,
       lees: () => themasLijst(),
       zet: items => zetThemas(items),
-      bijschrift: t => (t.aantal ? t.aantal + ' activiteiten' : 'aantal nog onbekend'),
+      bijschrift: t => {
+        const delen = [];
+        if (t.aantal) delen.push(t.aantal + ' activiteiten');
+        if (Array.isArray(t.boekjes) && t.boekjes.length) {
+          delen.push(t.boekjes.length + (t.boekjes.length === 1 ? ' boekje' : ' boekjes'));
+        }
+        if (Array.isArray(t.activiteiten) && t.activiteiten.length) {
+          delen.push(t.activiteiten.length + ' gekoppeld');
+        }
+        return delen.join(' · ') || 'nog niets ingevuld';
+      },
+
+      leegExtra: () => {
+        boekjesVak.innerHTML = '';
+        document.getElementById('th-generiek-titel').value = '';
+        document.getElementById('th-generiek-url').value = '';
+        actZoek.value = '';
+        gekozenNu = [];
+        tekenActiviteiten([]);
+      },
+
+      vulExtra: item => {
+        boekjesVak.innerHTML = '';
+        (item.boekjes || []).forEach(boekjeRij);
+        const generiek = item.generiek || {};
+        document.getElementById('th-generiek-titel').value = generiek.titel || '';
+        document.getElementById('th-generiek-url').value = generiek.url || '';
+        actZoek.value = '';
+        gekozenNu = (item.activiteiten || []).slice();
+        tekenActiviteiten(gekozenNu);
+      },
+
       bouw: (invoer, origineel) => {
         const titel = invoer.titel.value.trim();
         if (!titel) return null;
+
         const aantal = parseInt(invoer.aantal.value, 10);
         const thema = { ...(origineel || {}), titel, samenvatting: invoer.tekst.value.trim() };
+
         if (Number.isFinite(aantal) && aantal > 0) thema.aantal = aantal;
         else delete thema.aantal;
+
+        thema.boekjes = leesBoekjes();
+
+        const gTitel = document.getElementById('th-generiek-titel').value.trim();
+        const gUrl = document.getElementById('th-generiek-url').value.trim();
+        if (gUrl) thema.generiek = { titel: gTitel, url: gUrl };
+        else delete thema.generiek;
+
+        // Ook de aangevinkte activiteiten die door de zoekterm buiten beeld staan
+        thema.activiteiten = [...new Set([
+          ...gekozenNu.filter(t => !zichtbaar(t)),
+          ...gekozenActiviteiten()
+        ])];
+
         return thema;
       }
     });
 
     beheer.teken();
+    tekenActiviteiten([]);
     document.getElementById('th-telling').textContent =
       themasLijst().length + " thema's";
   })();
 </script>
-<script src="thema.js?v=18"></script>
+<script src="thema.js?v=19"></script>
 </body>
 </html>
