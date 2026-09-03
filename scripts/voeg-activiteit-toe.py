@@ -82,6 +82,7 @@ def instellingen():
         "supabase_url": _waarde_uit_js(auth, "SUPABASE_URL", "admin-auth.js"),
         "supabase_key": _waarde_uit_js(auth, "SUPABASE_PUBLISHABLE_KEY", "admin-auth.js"),
         "emojis": _emojis_uit_js(data_js),
+        "samenvoeging": _samenvoeging_uit_js(data_js),
         # Leeftijdslabels zijn de labels met een cijfer erin; de rest is categorie.
         "categorieen": [l for l in labels if not re.search(r"\d", l)],
         "leeftijden": [l for l in labels if re.search(r"\d", l)],
@@ -108,7 +109,20 @@ def _lijkt_op_emoji(waarde):
     return not re.search(r"[A-Za-z0-9]", kaal)
 
 
-def _zoek_optie(waarde, opties):
+def _samenvoeging_uit_js(bron):
+    """Labels die zijn samengevoegd; aangeleverde tekst kan nog de oude naam
+    gebruiken, dus die vertalen we voor we gaan zoeken."""
+    treffer = re.search(r"const\s+AB_LABEL_SAMENVOEGING\s*=\s*\{(.*?)\};", bron, re.S)
+    if not treffer:
+        return {}
+    return dict(re.findall(r"'([^']*)'\s*:\s*'([^']*)'", treffer.group(1)))
+
+
+def _zoek_optie(waarde, opties, samenvoeging=None):
+    for oud, nieuw in (samenvoeging or {}).items():
+        if _kaal(oud) == _kaal(waarde):
+            waarde = nieuw
+            break
     gezocht = _kaal(waarde)
     for optie in opties:
         if _kaal(optie) == gezocht:
@@ -166,7 +180,7 @@ def parseer(tekst, cfg):
             fouten.append(veld + " is leeg.")
             continue
         for w in waarden:
-            optie = _zoek_optie(w, opties)
+            optie = _zoek_optie(w, opties, cfg["samenvoeging"])
             if optie is None:
                 fouten.append('"' + w + '" is geen bestaande ' + soort
                               + ". Beschikbaar: " + ", ".join(opties))

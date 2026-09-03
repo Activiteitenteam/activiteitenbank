@@ -12,9 +12,7 @@ const AB_ACTIVITEITEN_PAD = 'Activiteitenbank-site/activiteiten.json';
 // worden herkend aan het cijfer erin en staan daarom apart onderaan; de rest
 // geldt als categorie.
 const AB_PRESET_LABELS = [
-  'Creatief',
   'Creativiteit',
-  'Sport',
   'Sport & bewegen',
   'Natuur',
   'Digitale media',
@@ -55,6 +53,28 @@ const AB_EMOJI_GROEPEN = {
 // aangeleverde emoji bestaat, dus de groepen blijven de enige bron.
 const AB_EMOJIS = Object.values(AB_EMOJI_GROEPEN).flat();
 
+// Labels die zijn samengevoegd. Bestaande activiteiten dragen de oude naam
+// nog; die wordt bij het inlezen omgezet, zodat de site meteen de nieuwe naam
+// toont. Bij de eerstvolgende opslag staat het ook echt zo in het bestand,
+// waarna deze tabel leeg kan.
+const AB_LABEL_SAMENVOEGING = {
+  'Creatief': 'Creativiteit',
+  'Sport': 'Sport & bewegen'
+};
+
+// Zet oude labelnamen om en haalt dubbelingen eruit: een activiteit met
+// zowel het oude als het nieuwe label houdt er één over.
+function hernoemLabels(activiteit) {
+  if (!Array.isArray(activiteit.labels)) return activiteit;
+  const nieuw = [];
+  activiteit.labels.forEach(naam => {
+    const om = AB_LABEL_SAMENVOEGING[naam] || naam;
+    if (!nieuw.includes(om)) nieuw.push(om);
+  });
+  activiteit.labels = nieuw;
+  return activiteit;
+}
+
 // Wordt alleen gebruikt als de backend even niet bereikbaar is
 // (bijvoorbeeld tijdens het opstarten na een periode van inactiviteit).
 const STANDAARD_ACTIVITEITEN = [
@@ -69,14 +89,14 @@ const STANDAARD_ACTIVITEITEN = [
     emoji: '🎨',
     titel: 'Zoutdeeg figuren',
     beschrijving: 'Kneden, vormen en bakken met eenvoudig recept.',
-    labels: ['Creatief', '4-7 jaar'],
+    labels: ['Creativiteit', '4-7 jaar'],
     aangeleverdDoor: 'Nadia'
   },
   {
     emoji: '🎲',
     titel: 'Levend memory',
     beschrijving: 'Actief groepsspel voor binnen of buiten.',
-    labels: ['Sport', '7-12 jaar'],
+    labels: ['Sport & bewegen', '7-12 jaar'],
     aangeleverdDoor: 'Kim'
   }
 ];
@@ -160,7 +180,7 @@ function scheidInstellingen(rauw) {
   const themas = regel(AB_INSTELLING_THEMAS);
   AB_THEMAS_OPSLAG = themas && Array.isArray(themas.items) ? themas.items : null;
 
-  return rauw.filter(i => !isInstelling(i));
+  return rauw.filter(i => !isInstelling(i)).map(hernoemLabels);
 }
 
 // De opgeslagen lijst, of de standaardlijst zolang er nog niets is opgeslagen

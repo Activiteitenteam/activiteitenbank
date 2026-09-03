@@ -32,7 +32,11 @@ function abCategorieLabels() {
 // er niet toe, en "4-7" mag ook als de optie "4-7 jaar" heet.
 function abZoekOptie(waarde, opties) {
   const kaal = s => String(s).toLowerCase().replace(/\s+/g, ' ').trim();
-  const gezocht = kaal(waarde);
+
+  // Samengevoegde labels: aangeleverde tekst kan nog de oude naam gebruiken
+  const omgezet = Object.entries(AB_LABEL_SAMENVOEGING)
+    .find(([oud]) => kaal(oud) === kaal(waarde));
+  const gezocht = kaal(omgezet ? omgezet[1] : waarde);
   return opties.find(o => kaal(o) === gezocht)
       || opties.find(o => kaal(o).replace(/ jaar$/, '') === gezocht.replace(/ jaar$/, ''))
       || null;
