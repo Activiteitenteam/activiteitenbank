@@ -138,11 +138,13 @@ nav a.nav-prikbord:hover, nav a.nav-prikbord:focus, nav a.nav-prikbord.actief { 
   text-align: center;
   /* Padding lager dan de min-height, zodat die laatste overal bepalend is;
      anders wordt de homepage door zijn langere tekst toch weer iets hoger. */
-  padding: 3.5rem 1.5rem 4rem;
+  padding: 2.25rem 1.5rem;
   /* Vaste hoogte met de tekst in het midden. Zonder dit bepaalt de
      hoeveelheid tekst de hoogte, en verspringt de banner bij elke
-     paginawissel: 307 px op de homepage tegen 174 op een detailpagina. */
-  min-height: 19rem;
+     paginawissel: 307 px op de homepage tegen 174 op een detailpagina.
+     Eén maat voor alle pagina's, ook de homepage: een smalle band laat de
+     inhoud eronder meteen zien in plaats van hem onder de vouw te duwen. */
+  min-height: 13.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -174,12 +176,14 @@ nav a.nav-prikbord:hover, nav a.nav-prikbord:focus, nav a.nav-prikbord.actief { 
 }
 .hero-inhoud { position: relative; z-index: 4; }
 .hero h1 {
-  font-size: clamp(2rem, 5vw, 3.2rem);
+  /* Bovengrens mee omlaag met de band: een kop van 3,2rem vult een smalle
+     banner te veel en laat geen lucht boven en onder. */
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
   font-weight: 800;
-  margin-bottom: .75rem;
+  margin-bottom: .5rem;
 }
 .hero p {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   max-width: 620px;
   margin: 0 auto;
   opacity: .95;
@@ -189,18 +193,34 @@ nav a.nav-prikbord:hover, nav a.nav-prikbord:focus, nav a.nav-prikbord.actief { 
   /* Ook hier moet de min-height bepalend zijn, dus de padding eronder
      blijven: op mobiel valt de langere homepagetekst over meer regels. */
   .hero {
-    min-height: 20rem;
-    padding: 2.5rem 1.25rem;
+    min-height: 14.5rem;
+    padding: 2rem 1.25rem;
   }
 }
 
 /* Subpagina's houden kleinere koppen; de hoogte komt van de min-height */
-.hero-sub { padding: 2.75rem 1.5rem 3rem; }
+.hero-sub { padding: 2rem 1.5rem; }
 .hero-sub h1 {
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(1.4rem, 2.6vw, 1.85rem);
   margin-bottom: .25rem;
 }
-.hero-sub p { font-size: 1.05rem; }
+/* Op de themapagina komt deze tekst uit de admin en kan hij lang zijn. Zonder
+   grens groeit die ene banner mee en is hij niet meer even hoog als de rest;
+   de volledige tekst staat daarom onder de banner (.thema-intro). */
+.hero-sub p {
+  font-size: 1rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.thema-intro {
+  max-width: 70ch;
+  margin: 0 auto 1.5rem;
+  text-align: center;
+  color: var(--zacht);
+  font-size: 1.05rem;
+}
 /* Elke sectie houdt zijn eigen kleur, nu als transparante laag over de
    bannerfoto's heen. De egale achtergrond blijft eronder staan als de
    foto's nog laden. */
@@ -1550,12 +1570,11 @@ footer .admin-link:hover { opacity: 1; }
 }
 .keuze-knop {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: .6rem;
+  align-items: center;
+  gap: .8rem;
   font: inherit;
   text-align: left;
-  padding: 1.4rem 1.5rem;
+  padding: 1rem 1.25rem;
   border: 0;
   border-top: 6px solid var(--groen);
   border-radius: 16px;
@@ -1570,7 +1589,7 @@ footer .admin-link:hover { opacity: 1; }
   box-shadow: 0 6px 16px rgba(0, 0, 0, .12);
 }
 .keuze-knop:focus-visible { outline: 3px solid var(--blauw); outline-offset: 3px; }
-.keuze-emoji { font-size: 1.9rem; line-height: 1; }
+.keuze-emoji { font-size: 1.6rem; line-height: 1; flex: none; }
 .keuze-naam { font-weight: 700; font-size: 1.05rem; }
 
 .keuze-creatief { border-top-color: var(--paars); }
